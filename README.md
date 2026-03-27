@@ -86,6 +86,7 @@
 ## 🤝 团队同步与个人定制
 
 ### 1. 一键安装
+
 **Windows (PS):** `irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.ps1 | iex`
 **macOS/Linux:** `curl -fsSL https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.sh | bash`
 
