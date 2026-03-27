@@ -86,8 +86,8 @@
 ## 🤝 团队同步与个人定制
 
 ### 1. 一键安装
-**Windows (PS):** `irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.ps1 | iex`
-**macOS/Linux:** `curl -fsSL https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.sh | bash`
+- **Windows (PS):** `irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.ps1 | iex`
+- **macOS/Linux:** `curl -fsSL https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.sh | bash`
 
 ### 2. 个人偏好设置 (本地覆盖)
 您可以创建以下文件自定义本地行为，这些文件已被 `.gitignore` 自动忽略：
