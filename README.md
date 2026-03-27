@@ -17,16 +17,14 @@
 
 ## 🚀 快速开始与操作指令 (Operational Guide)
 
-在项目根目录启动 `claude` 后，请根据您的场景直接运行以下指令：
+在项目根目录启动 `claude` 后，直接运行以下指令：
 
-### 1. 新成员入职 (First Time Only)
-如果您是第一次加入使用 USDS 的团队，请先运行引导：
+### 1. 第一次使用 (Onboarding)
 ```bash
-/onboard
+/onboard                     # 学习协作协议与规范 (推荐首选)
 ```
 
 ### 2. 场景 A：从零开始新项目 (Greenfield)
-按照以下顺序执行指令，完成从想法到任务的转化：
 ```bash
 /start                       # 启动引导并选择“新项目”
 /discovery "我的想法是..."     # 生成需求文档 (PRD)
@@ -35,12 +33,11 @@
 /sprint-kickoff              # 将架构拆解为具体任务 (Backlog)
 ```
 
-### 3. 场景 B：维护/接手已有项目 (Brownfield)
-如果您需要分析一个现有的代码库，请执行：
+### 3. 场景 B：维护已有项目 (Brownfield)
 ```bash
 /start                       # 启动引导并选择“维护项目”
 /project-scan                # 自动分析项目架构与技术债
-/reverse-document            # 为核心代码反向生成 PRD 文档
+/reverse-document            # 为核心代码反向生成说明文档
 ```
 
 ### 4. 场景 C：开发、评审与交付 (Daily Workflow)
@@ -56,67 +53,54 @@
 ## 👥 代理架构 (Agent Roster)
 
 ### Tier 1: Directors (愿景与风险)
-- **Product Director**: 业务逻辑守门员，负责 `docs/specs/PRD.md`。
-- **Technical Architect**: 技术大脑，负责 `docs/arch/ADR.md` 与 API 契约。
-- **Delivery Manager**: 节奏大师，负责 `production/backlog.md` 与风险预警。
+- **Product Director**: 业务逻辑需求，负责 `docs/specs/PRD.md`。
+- **Technical Architect**: 技术架构，负责 `docs/arch/ADR.md` 与 API 契约。
+- **Delivery Manager**: 进度，负责 `production/backlog.md` 与风险预警。
 
 ### Tier 2: Leads (执行与质量)
 - **Lead Developer**: 实现标准制定者，负责核心重构与 `src/` 质量。
-- **QA Lead**: 质量守门员，负责 `docs/reviews/RELEASE-CHECKLIST.md`。
+- **QA Lead**: 质量审查，负责 `docs/reviews/RELEASE-CHECKLIST.md`。
 
 ### Tier 3: Specialists (纵深领域)
 - **Frontend/Backend Developer**: 具体端实现。
 - **Security/DevOps Engineer**: 安全审计与自动化部署。
-
 ---
 
 ## 🛠️ 核心指令 (Slash Commands)
 
 | 指令 | 名称 | 负责代理 | 产出物 |
 | :--- | :--- | :--- | :--- |
-| **`/start`** | **智能引导** | `Delivery Manager` | 引导至新项目或维护路径 |
-| **`/onboard`** | **团队入职** | `Delivery Manager` | 向成员介绍协作协议与规范 |
+| **`/start`** | **智能引导** | `Delivery Manager` | 引导至正确路径 |
+| **`/onboard`** | **团队入职** | `Delivery Manager` | 协议演练与规范介绍 |
 | `/discovery` | **需求发现** | `Product Director` | `docs/specs/PRD.md` |
-| `/setup-stack` | **技术初始化**| `Architect` | 初始化目录结构与依赖文件 |
+| `/project-scan`| **项目扫描** | `Architect` | `docs/arch/SYSTEM-MAP.md` |
+| `/setup-stack` | **技术初始化**| `Architect` | 项目骨架与依赖文件 |
 | `/arch-design` | **架构设计** | `Architect` | `docs/arch/ADR.md` |
+| `/summarize-arch`| **架构总结** | `Architect` | 压缩 ADR 至最终态文档 |
 | `/sprint-kickoff`| **任务拆解** | `Delivery Manager` | `production/backlog.md` |
-| `/review` | **技术评审** | `Architect` | 代码审计报告 |
+| `/review` | **技术评审** | `Architect` | 深度代码审计报告 |
 | `/gate-check` | **质量审计** | `QA Lead` | `RELEASE-CHECKLIST.md` |
 
 ---
 
-## 🤝 团队分发与同步 (Team Sync)
+## 🤝 团队同步与个人定制
 
-### 1. 一键安装 (Zero-Clone Install)
-如果您想在已有项目中快速启用 USDS，请在项目根目录下根据您的操作系统执行以下命令：
+### 1. 一键安装
+**Windows (PS):** `irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.ps1 | iex`
+**macOS/Linux:** `curl -fsSL https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.sh | bash`
 
-**Windows (PowerShell):**
-```powershell
-irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/main/scripts/install-usds.ps1 | iex
-```
+### 2. 个人偏好设置 (本地覆盖)
+您可以创建以下文件自定义本地行为，这些文件已被 `.gitignore` 自动忽略：
+- **`CLAUDE.local.md`**: 自定义个人快捷指令或偏好模型。
+- **`.claude/settings.local.json`**: 自定义本地文件权限 (Allow/Deny)。
+*模板参考: `.claude/docs/*-template.*`*
 
-**macOS / Linux (Bash):**
+### 3. 提交至 Git
+**必须**提交 `.claude/` 目录以共享技能：
 ```bash
-curl -fsSL https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/main/scripts/install-usds.sh | bash
+git add .claude/ CLAUDE.md UNIVERSAL-STUDIO.md README.md
+git commit -m "chore: 部署 USDS 基础设施"
 ```
-
-### 2. 将 USDS 提交至 Git (关键)
-为了让全员共享这些技能，**必须**提交 `.claude` 目录。请确保您的 `.gitignore` **没有**排除这些文件：
-```bash
-git add .claude/agents/ .claude/skills/ .claude/rules/ .claude/hooks/
-git add CLAUDE.md README.md UNIVERSAL-STUDIO.md
-git commit -m "chore: 部署 Universal Software Studio (USDS) 基础设施"
-git push
-```
-
----
-
-## 📜 底层规则 (Engineering Standards)
-
-USDS 自动根据文件路径执行以下校验规则：
-- `src/**`: 遵循 `.claude/rules/global-standards.md`
-- `tests/**`: 遵循 `.claude/rules/test-conventions.md`
-- `docs/**`: 遵循 `.claude/rules/doc-standards.md`
 
 ---
 *Powered by Universal Software Studio — 像经营工作室一样编写代码。*

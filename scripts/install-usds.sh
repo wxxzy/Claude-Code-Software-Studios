@@ -3,8 +3,8 @@
 # 仓库地址: https://github.com/wxxzy/Claude-Code-Software-Studios
 
 REPO_URL="https://github.com/wxxzy/Claude-Code-Software-Studios"
-ZIP_URL="$REPO_URL/archive/refs/heads/main.zip"
-TEMP_ZIP="/tmp/usds-main.zip"
+ZIP_URL="$REPO_URL/archive/refs/heads/master.zip"
+TEMP_ZIP="/tmp/usds-master.zip"
 TEMP_DIR="/tmp/usds-extract"
 
 echo -e "\033[0;36m🚀 正在从 GitHub 获取 Universal Software Studio (USDS)...\033[0m"
@@ -18,7 +18,7 @@ echo -e "\033[0;90m📦 正在解压并注入项目...\033[0m"
 mkdir -p "$TEMP_DIR"
 unzip -q -o "$TEMP_ZIP" -d "$TEMP_DIR"
 
-SOURCE_FOLDER="$TEMP_DIR/Claude-Code-Software-Studios-main"
+SOURCE_FOLDER="$TEMP_DIR/Claude-Code-Software-Studios-master"
 
 # 3. 复制核心文件到当前目录
 ITEMS_TO_COPY=(".claude" "docs" "production" "scripts" "CLAUDE.md" "UNIVERSAL-STUDIO.md" "README.md")

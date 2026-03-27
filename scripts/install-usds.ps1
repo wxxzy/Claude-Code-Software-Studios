@@ -2,8 +2,8 @@
 # 仓库地址: https://github.com/wxxzy/Claude-Code-Software-Studios
 
 $RepoUrl = "https://github.com/wxxzy/Claude-Code-Software-Studios"
-$ZipUrl = "$RepoUrl/archive/refs/heads/main.zip"
-$TempZip = "$env:TEMP\usds-main.zip"
+$ZipUrl = "$RepoUrl/archive/refs/heads/master.zip"
+$TempZip = "$env:TEMP\usds-master.zip"
 $TempDir = "$env:TEMP\usds-extract"
 
 Write-Host "🚀 正在从 GitHub 获取 Universal Software Studio (USDS)..." -ForegroundColor Cyan
@@ -17,7 +17,8 @@ Write-Host "📦 正在解压并注入项目..." -ForegroundColor Gray
 if (Test-Path $TempDir) { Remove-Item -Path $TempDir -Recurse -Force }
 Expand-Archive -Path $TempZip -DestinationPath $TempDir
 
-$SourceFolder = Join-Path $TempDir "Claude-Code-Software-Studios-main"
+# 注意：GitHub Zip 解压后的文件夹名通常是 [仓库名]-[分支名]
+$SourceFolder = Join-Path $TempDir "Claude-Code-Software-Studios-master"
 
 # 3. 复制核心文件到当前目录
 $ItemsToCopy = @(".claude", "docs", "production", "scripts", "CLAUDE.md", "UNIVERSAL-STUDIO.md", "README.md")
