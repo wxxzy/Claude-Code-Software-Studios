@@ -1,21 +1,37 @@
-# USDS 工作室一键安装脚本 (Windows PowerShell 版)
+# USDS 远程安装脚本 (Windows PowerShell 版)
+# 仓库地址: https://github.com/wxxzy/Claude-Code-Software-Studios
 
-$USDS_SOURCE = "https://your-internal-git/usds-core.git" # 替换为您的核心仓库地址
+$RepoUrl = "https://github.com/wxxzy/Claude-Code-Software-Studios"
+$ZipUrl = "$RepoUrl/archive/refs/heads/main.zip"
+$TempZip = "$env:TEMP\usds-main.zip"
+$TempDir = "$env:TEMP\usds-extract"
 
-Write-Host "🚀 正在为当前项目注入 Universal Software Studio (USDS)..." -ForegroundColor Cyan
+Write-Host "🚀 正在从 GitHub 获取 Universal Software Studio (USDS)..." -ForegroundColor Cyan
 
-# 1. 创建核心目录
-$Dirs = ".claude/agents", ".claude/skills", ".claude/rules", ".claude/hooks", ".claude/docs/templates", "docs/specs", "docs/arch", "docs/reviews", "production/backlog"
-foreach ($Dir in $Dirs) {
-    if (!(Test-Path $Dir)) {
-        New-Item -ItemType Directory -Path $Dir -Force | Out-Null
+# 1. 下载 ZIP 包
+Write-Host "📥 正在下载核心组件..." -ForegroundColor Gray
+Invoke-WebRequest -Uri $ZipUrl -OutFile $TempZip
+
+# 2. 解压文件
+Write-Host "📦 正在解压并注入项目..." -ForegroundColor Gray
+if (Test-Path $TempDir) { Remove-Item -Path $TempDir -Recurse -Force }
+Expand-Archive -Path $TempZip -DestinationPath $TempDir
+
+$SourceFolder = Join-Path $TempDir "Claude-Code-Software-Studios-main"
+
+# 3. 复制核心文件到当前目录
+$ItemsToCopy = @(".claude", "docs", "production", "scripts", "CLAUDE.md", "UNIVERSAL-STUDIO.md", "README.md")
+foreach ($Item in $ItemsToCopy) {
+    $Src = Join-Path $SourceFolder $Item
+    if (Test-Path $Src) {
+        Copy-Item -Path $Src -Destination "." -Recurse -Force
+        Write-Host "✅ 已同步: $Item" -ForegroundColor Green
     }
 }
 
-# 2. 复制核心配置文件 (这里假设您已经把核心文件打包或放在固定位置)
-# 在实际分发时，可以使用 git clone 或 curl 下载
-Write-Host "📦 正在同步代理定义、技能指令与底层规则..." -ForegroundColor Yellow
+# 4. 清理临时文件
+Remove-Item -Path $TempZip -Force
+Remove-Item -Path $TempDir -Recurse -Force
 
-# 3. 提示完成
-Write-Host "✅ USDS 注入完成！" -ForegroundColor Green
-Write-Host "👉 请运行 'claude' 进入会话，并输入 '/start' 开始引导。" -ForegroundColor White
+Write-Host "`n✨ USDS 工作室已成功注入当前项目！" -ForegroundColor Green
+Write-Host "👉 现在运行 'claude' 后，输入 '/onboard' 开始您的旅程。" -ForegroundColor White

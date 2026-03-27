@@ -1,80 +1,20 @@
-# Hook: pre-push-test-gate
+# 推送前测试门控 (Pre-Push Test Gate)
 
-## Trigger
+本指南说明了 `validate-push.sh` 在执行 Git 推送 (Push) 前所进行的强制测试门控。
 
-Runs before any push to a remote branch. Mandatory for pushes to `develop`
-and `main`.
+## 1. 强制门槛 (Quality Gates)
+- **Unit Test Pass Rate**: 必须达到 100%。任何失败的单元测试都会直接中断推送。
+- **Core Path Coverage**: `src/core/` 目录下的代码逻辑必须包含覆盖。
+- **Regression Pass**: 关键路径（如登录、API 核心逻辑）必须通过自动化冒烟测试。
 
-## Purpose
+## 2. 检查流程
+1.  **运行环境检测**: 脚本会自动执行 `pytest` (Python) 或 `npm test` (JavaScript)。
+2.  **Linting**: 执行静态分析检查（如 `flake8`, `eslint`）。
+3.  **漏洞扫描 (SCA)**: 检查外部依赖项是否有已知的 CVE 漏洞。
 
-Ensures the build compiles, unit tests pass, and critical smoke tests pass
-before code reaches shared branches. This is the last automated quality gate
-before code affects other developers.
+## 3. 分支策略
+- **main/master**: 推送到生产分支时，测试门槛将自动提升至 P1 级别（必须进行回归验证）。
+- **feature/***: 开发分支允许较低的性能指标，但单元测试必须通过。
 
-## Implementation
-
-```bash
-#!/bin/bash
-# Pre-push hook: Build and test gate
-
-REMOTE="$1"
-URL="$2"
-
-# Only enforce full gate for develop and main
-PROTECTED_BRANCHES="develop main"
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-
-FULL_GATE=false
-for branch in $PROTECTED_BRANCHES; do
-    if [ "$CURRENT_BRANCH" = "$branch" ]; then
-        FULL_GATE=true
-        break
-    fi
-done
-
-echo "=== Pre-Push Quality Gate ==="
-
-# Step 1: Build
-echo "Building..."
-# Adapt to your build system:
-# make build || exit 1
-# dotnet build || exit 1
-# cargo build || exit 1
-echo "Build: PASS"
-
-# Step 2: Unit tests
-echo "Running unit tests..."
-# Adapt to your test framework:
-# python -m pytest tests/unit/ -x || exit 1
-# dotnet test tests/unit/ || exit 1
-# cargo test || exit 1
-echo "Unit tests: PASS"
-
-if [ "$FULL_GATE" = true ]; then
-    # Step 3: Integration tests (only for protected branches)
-    echo "Running integration tests..."
-    # python -m pytest tests/integration/ -x || exit 1
-    echo "Integration tests: PASS"
-
-    # Step 4: Smoke tests
-    echo "Running smoke tests..."
-    # python -m pytest tests/playtest/smoke/ -x || exit 1
-    echo "Smoke tests: PASS"
-
-    # Step 5: Performance regression check
-    echo "Checking performance baselines..."
-    # python tools/ci/perf_check.py || exit 1
-    echo "Performance: PASS"
-fi
-
-echo "=== All gates passed ==="
-exit 0
-```
-
-## Agent Integration
-
-When this hook fails:
-1. Build failure: invoke `lead-programmer` to diagnose
-2. Unit test failure: invoke `qa-tester` to identify the failing test and
-   `gameplay-programmer` or relevant programmer to fix
-3. Performance regression: invoke `performance-analyst` to analyze
+## 4. 失败处理
+如果推送失败，`qa-lead` 将在会话中主动提示失败的具体测试用例。请修复后再重试。

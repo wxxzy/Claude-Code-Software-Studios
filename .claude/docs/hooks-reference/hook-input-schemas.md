@@ -1,126 +1,38 @@
-# Hook Input/Output Schemas
+# 钩子输入架构 (Hook Input Schemas)
 
-This documents the JSON payloads each Claude Code hook receives on stdin for every event type.
+本指南定义了 Universal Software Studio (USDS) 的自动化钩子 (Hooks) 在运行过程中预期的 JSON 输入格式。这些信息对于修改或自定义钩子逻辑至关重要。
 
-## PreToolUse
+## 1. SessionStart (会话启动)
+**触发条件**: 每次启动 `claude` 终端会话时。
+**输入 Schema**: 无特定 stdin 输入，脚本通常直接读取环境。
 
-Fired before a tool is executed. Can **allow** (exit 0) or **block** (exit 2).
-
-### PreToolUse: Bash
-
+## 2. PreToolUse (工具调用前)
+**触发条件**: 任何代理在执行 `Write`, `Edit` 或 `Bash` 操作前。
+**输入 Schema**:
 ```json
 {
-  "tool_name": "Bash",
-  "tool_input": {
-    "command": "git commit -m 'feat: add player health system'",
-    "description": "Commit changes with message",
-    "timeout": 120000
-  }
+  "toolName": "string",  // 被调用的工具名称
+  "arguments": "object", // 该工具接收的所有参数
+  "agentId": "string"   // 发起调用的代理 ID
 }
 ```
 
-### PreToolUse: Write
-
+## 3. PreCompact (上下文压缩前)
+**触发条件**: 当会话 Token 达到阈值，Claude 准备进行快照压缩时。
+**输入 Schema**:
 ```json
 {
-  "tool_name": "Write",
-  "tool_input": {
-    "file_path": "src/gameplay/health.gd",
-    "content": "extends Node\n..."
-  }
+  "summary": "string",   // 系统生成的当前会话摘要草稿
+  "recentEvents": "array" // 最近的工具调用历史
 }
 ```
 
-### PreToolUse: Edit
-
+## 4. PostToolUse (工具调用后)
+**触发条件**: 文件写入或修改成功后。
+**输入 Schema**:
 ```json
 {
-  "tool_name": "Edit",
-  "tool_input": {
-    "file_path": "src/gameplay/health.gd",
-    "old_string": "var health = 100",
-    "new_string": "var health: int = 100"
-  }
+  "filePath": "string",  // 被修改的文件路径
+  "status": "success|error"
 }
 ```
-
-### PreToolUse: Read
-
-```json
-{
-  "tool_name": "Read",
-  "tool_input": {
-    "file_path": "src/gameplay/health.gd"
-  }
-}
-```
-
-## PostToolUse
-
-Fired after a tool completes. **Cannot block** (exit code ignored for blocking). Stderr messages are shown as warnings.
-
-### PostToolUse: Write
-
-```json
-{
-  "tool_name": "Write",
-  "tool_input": {
-    "file_path": "assets/data/enemy_stats.json",
-    "content": "{\"goblin\": {\"health\": 50}}"
-  },
-  "tool_output": "File written successfully"
-}
-```
-
-### PostToolUse: Edit
-
-```json
-{
-  "tool_name": "Edit",
-  "tool_input": {
-    "file_path": "assets/data/enemy_stats.json",
-    "old_string": "\"health\": 50",
-    "new_string": "\"health\": 75"
-  },
-  "tool_output": "File edited successfully"
-}
-```
-
-## SubagentStart
-
-Fired when a subagent is spawned via the Task tool.
-
-```json
-{
-  "agent_name": "game-designer",
-  "model": "sonnet",
-  "description": "Design the combat healing mechanic"
-}
-```
-
-## SessionStart
-
-Fired when a Claude Code session begins. **No stdin input** — the hook just runs and its stdout is shown to Claude as context.
-
-## PreCompact
-
-Fired before context window compression. **No stdin input** — the hook runs to save state before compression occurs.
-
-## Stop
-
-Fired when the Claude Code session ends. **No stdin input** — the hook runs for cleanup and logging.
-
-## Exit Code Reference
-
-| Exit Code | Meaning | Applicable Events |
-|-----------|---------|-------------------|
-| 0 | Allow / Success | All events |
-| 2 | Block (stderr shown to Claude) | PreToolUse only |
-| Other | Treated as error, tool proceeds | All events |
-
-## Notes
-
-- Hooks receive JSON on **stdin** (pipe). Use `INPUT=$(cat)` to capture.
-- Parse with `jq` if available, fall back to `grep` for cross-platform compatibility.
-- On Windows, `grep -P` (Perl regex) is often unavailable. Use `grep -E` (POSIX extended) instead.
-- Path separators may be `\` on Windows. Normalize with `sed 's|\\|/|g'` when comparing paths.

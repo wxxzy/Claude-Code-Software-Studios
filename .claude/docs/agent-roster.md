@@ -1,88 +1,24 @@
-# Agent Roster
+# USDS 代理名册与协调图 (Agent Roster & Coordination Map)
 
-The following agents are available. Each has a dedicated definition file in
-`.claude/agents/`. Use the agent best suited to the task at hand. When a task
-spans multiple domains, the coordinating agent (usually `producer` or the
-domain lead) should delegate to specialists.
+本手册定义了 Universal Software Studio (USDS) 中 10 位核心专家的层级结构、领域边界及协同决策路径。
 
-## Tier 1 -- Leadership Agents (Opus)
-| Agent | Domain | When to Use |
-|-------|--------|-------------|
-| `creative-director` | High-level vision | Major creative decisions, pillar conflicts, tone/direction |
-| `technical-director` | Technical vision | Architecture decisions, tech stack choices, performance strategy |
-| `producer` | Production management | Sprint planning, milestone tracking, risk management, coordination |
+## 1. 核心层级 (Hierarchy)
 
-## Tier 2 -- Department Lead Agents (Sonnet)
-| Agent | Domain | When to Use |
-|-------|--------|-------------|
-| `game-designer` | Game design | Mechanics, systems, progression, economy, balancing |
-| `lead-programmer` | Code architecture | System design, code review, API design, refactoring |
-| `art-director` | Visual direction | Style guides, art bible, asset standards, UI/UX direction |
-| `audio-director` | Audio direction | Music direction, sound palette, audio implementation strategy |
-| `narrative-director` | Story and writing | Story arcs, world-building, character design, dialogue strategy |
-| `qa-lead` | Quality assurance | Test strategy, bug triage, release readiness, regression planning |
-| `release-manager` | Release pipeline | Build management, versioning, changelogs, deployment, rollbacks |
-| `localization-lead` | Internationalization | String externalization, translation pipeline, locale testing |
+| 层级 | 职称 | 代理 ID | 核心领域 (Domain) | 决策权 |
+| :--- | :--- | :--- | :--- | :--- |
+| **Tier 1 (Directors)** | 产品/架构/交付 | `product-*`, `technical-*`, `delivery-*` | 跨模块愿景、架构选型、发布排期 | **最终决策权** |
+| **Tier 2 (Leads)** | 首席开发/测试/UX | `lead-*`, `qa-lead`, `ux-designer` | 技术标准、集成质量、交互体验 | 模块级决策权 |
+| **Tier 3 (Specialists)** | 前后端/安全/运维 | `frontend-*`, `backend-*`, `security-*`, `devops-*` | 具体代码实现、漏洞审计、部署流水线 | **无**（需向上咨询） |
 
-## Tier 3 -- Specialist Agents (Sonnet or Haiku)
-| Agent | Domain | Model | When to Use |
-|-------|--------|-------|-------------|
-| `systems-designer` | Systems design | Sonnet | Specific mechanic implementation, formula design, loops |
-| `level-designer` | Level design | Sonnet | Level layouts, pacing, encounter design, flow |
-| `economy-designer` | Economy/balance | Sonnet | Resource economies, loot tables, progression curves |
-| `gameplay-programmer` | Gameplay code | Sonnet | Feature implementation, gameplay systems code |
-| `engine-programmer` | Engine systems | Sonnet | Core engine, rendering, physics, memory management |
-| `ai-programmer` | AI systems | Sonnet | Behavior trees, pathfinding, NPC logic, state machines |
-| `network-programmer` | Networking | Sonnet | Netcode, replication, lag compensation, matchmaking |
-| `tools-programmer` | Dev tools | Sonnet | Editor extensions, pipeline tools, debug utilities |
-| `ui-programmer` | UI implementation | Sonnet | UI framework, screens, widgets, data binding |
-| `technical-artist` | Tech art | Sonnet | Shaders, VFX, optimization, art pipeline tools |
-| `sound-designer` | Sound design | Haiku | SFX design docs, audio event lists, mixing notes |
-| `writer` | Dialogue/lore | Sonnet | Dialogue writing, lore entries, item descriptions |
-| `world-builder` | World/lore design | Sonnet | World rules, faction design, history, geography |
-| `qa-tester` | Test execution | Haiku | Writing test cases, bug reports, test checklists |
-| `performance-analyst` | Performance | Sonnet | Profiling, optimization recs, memory analysis |
-| `devops-engineer` | Build/deploy | Haiku | CI/CD, build scripts, version control workflow |
-| `analytics-engineer` | Telemetry | Sonnet | Event tracking, dashboards, A/B test design |
-| `ux-designer` | UX flows | Sonnet | User flows, wireframes, accessibility, input handling |
-| `prototyper` | Rapid prototyping | Sonnet | Throwaway prototypes, mechanic testing, feasibility validation |
-| `security-engineer` | Security | Sonnet | Anti-cheat, exploit prevention, save encryption, network security |
-| `accessibility-specialist` | Accessibility | Haiku | WCAG compliance, colorblind modes, remapping, text scaling |
-| `live-ops-designer` | Live operations | Sonnet | Seasons, events, battle passes, retention, live economy |
-| `community-manager` | Community | Haiku | Patch notes, player feedback, crisis comms, community health |
+## 2. 协调与升级路径 (Escalation Map)
 
-## Engine-Specific Agents (use the set matching your engine)
+为了保证“协作而非自主”，代理在以下场景必须发起跨角色的横向咨询：
 
-### Engine Leads
+- **变更同步**: `backend-developer` 在修改 API 定义前，必须在会话中主动询问 `frontend-developer` 是否受影响。
+- **架构对齐**: 任何 Tier 3 代理在创建新文件或修改核心逻辑前，必须提交 **方案 (Options)** 并获得 `technical-architect` 的批准。
+- **风险升级**: 如果 `lead-developer` 发现任务预估严重偏离，必须立即通知 `delivery-manager` 更新 Backlog。
+- **质量否决**: `qa-lead` 对不符合验收标准的提交拥有 **一键否决权**，并将任务状态回滚至 `lead-developer`。
 
-| Agent | Engine | Model | When to Use |
-| ---- | ---- | ---- | ---- |
-| `unreal-specialist` | Unreal Engine 5 | Sonnet | Blueprint vs C++, GAS overview, UE subsystems, Unreal optimization |
-| `unity-specialist` | Unity | Sonnet | MonoBehaviour vs DOTS, Addressables, URP/HDRP, Unity optimization |
-| `godot-specialist` | Godot 4 | Sonnet | GDScript patterns, node/scene architecture, signals, Godot optimization |
-
-### Unreal Engine Sub-Specialists
-
-| Agent | Subsystem | Model | When to Use |
-| ---- | ---- | ---- | ---- |
-| `ue-gas-specialist` | Gameplay Ability System | Sonnet | Abilities, gameplay effects, attribute sets, tags, prediction |
-| `ue-blueprint-specialist` | Blueprint Architecture | Sonnet | BP/C++ boundary, graph standards, naming, BP optimization |
-| `ue-replication-specialist` | Networking/Replication | Sonnet | Property replication, RPCs, prediction, relevancy, bandwidth |
-| `ue-umg-specialist` | UMG/CommonUI | Sonnet | Widget hierarchy, data binding, CommonUI input, UI performance |
-
-### Unity Sub-Specialists
-
-| Agent | Subsystem | Model | When to Use |
-| ---- | ---- | ---- | ---- |
-| `unity-dots-specialist` | DOTS/ECS | Sonnet | Entity Component System, Jobs, Burst compiler, hybrid renderer |
-| `unity-shader-specialist` | Shaders/VFX | Sonnet | Shader Graph, VFX Graph, URP/HDRP customization, post-processing |
-| `unity-addressables-specialist` | Asset Management | Sonnet | Addressable groups, async loading, memory, content delivery |
-| `unity-ui-specialist` | UI Toolkit/UGUI | Sonnet | UI Toolkit, UXML/USS, UGUI Canvas, data binding, cross-platform input |
-
-### Godot Sub-Specialists
-
-| Agent | Subsystem | Model | When to Use |
-| ---- | ---- | ---- | ---- |
-| `godot-gdscript-specialist` | GDScript | Sonnet | Static typing, design patterns, signals, coroutines, GDScript performance |
-| `godot-shader-specialist` | Shaders/Rendering | Sonnet | Godot shading language, visual shaders, particles, post-processing |
-| `godot-gdextension-specialist` | GDExtension | Sonnet | C++/Rust bindings, native performance, custom nodes, build systems |
+## 3. 协作原则
+- **禁止单一视角**: 架构师在做选型决策时，必须征求 `devops-engineer` 关于部署成本的意见。
+- **透明审批**: 所有的“批准 (Approval)”操作必须在会话日志 (`session-log.md`) 中有明确的人类确认记录。

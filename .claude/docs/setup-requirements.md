@@ -1,80 +1,22 @@
-# Setup Requirements
+# 环境配置指南 (Setup Requirements)
 
-This template requires a few tools to be installed for full functionality.
-All hooks fail gracefully if tools are missing — nothing will break, but
-you'll lose validation features.
+为了确保 Universal Software Studio (USDS) 的所有功能（包括 Hook 和验证脚本）能正常运行，请在您的开发机器上确认以下依赖。
 
-## Required
+## 1. 核心运行环境 (Mandatory)
+- **Git**: 2.x+。所有 Hook 都依赖 Git 的生命周期触发。
+- **Claude Code CLI**: `npm install -g @anthropic-ai/claude-code`。核心运行引擎。
 
-| Tool | Purpose | Install |
-| ---- | ---- | ---- |
-| **Git** | Version control, branch management | [git-scm.com](https://git-scm.com/) |
-| **Claude Code** | AI agent CLI | `npm install -g @anthropic-ai/claude-code` |
+## 2. 自动化支持工具 (Recommended)
+- **jq**: 1.6+。用于 Hook 中的 JSON 解析。
+- **Python 3.8+**: 部分 Hook 需要运行小型脚本来检查 PRD 格式。
+- **PowerShell 7.x (Windows)**: 保证 `install-usds.ps1` 能够跨版本运行。
 
-## Recommended
+## 3. 会话设置 (Claude Code)
+建议在项目的 `.claude/settings.json` 中配置好以下权限以提高效率：
+- `Allow Bash(git status*)`
+- `Allow Bash(ls *)`
+- `Deny Bash(rm -rf *)` (安全保护)
 
-| Tool | Used By | Purpose | Install |
-| ---- | ---- | ---- | ---- |
-| **jq** | Hooks (4 of 8) | JSON parsing in commit/push/asset/agent hooks | See below |
-| **Python 3** | Hooks (2 of 8) | JSON validation for data files | [python.org](https://www.python.org/) |
-| **Bash** | All hooks | Shell script execution | Included with Git for Windows |
-
-### Installing jq
-
-**Windows** (any of these):
-```
-winget install jqlang.jq
-choco install jq
-scoop install jq
-```
-
-**macOS**:
-```
-brew install jq
-```
-
-**Linux**:
-```
-sudo apt install jq     # Debian/Ubuntu
-sudo dnf install jq     # Fedora
-sudo pacman -S jq       # Arch
-```
-
-## Platform Notes
-
-### Windows
-- Git for Windows includes **Git Bash**, which provides the `bash` command
-  used by all hooks in `settings.json`
-- Ensure Git Bash is on your PATH (default if installed via the Git installer)
-- Hooks use `bash .claude/hooks/[name].sh` — this works on Windows because
-  Claude Code invokes commands through a shell that can find `bash.exe`
-
-### macOS / Linux
-- Bash is available natively
-- Install `jq` via your package manager for full hook support
-
-## Verifying Your Setup
-
-Run these commands to check prerequisites:
-
-```bash
-git --version          # Should show git version
-bash --version         # Should show bash version
-jq --version           # Should show jq version (optional)
-python3 --version      # Should show python version (optional)
-```
-
-## What Happens Without Optional Tools
-
-| Missing Tool | Effect |
-| ---- | ---- |
-| **jq** | Commit validation, push protection, asset validation, and agent audit hooks silently skip their checks. Commits and pushes still work. |
-| **Python 3** | JSON data file validation in commit and asset hooks is skipped. Invalid JSON can be committed without warning. |
-| **Both** | All hooks still execute without error (exit 0) but provide no validation. You're flying without safety nets. |
-
-## Recommended IDE
-
-Claude Code works with any editor, but the template is optimized for:
-- **VS Code** with the Claude Code extension
-- **Cursor** (Claude Code compatible)
-- Terminal-based Claude Code CLI
+## 4. 故障排查
+- 如果 `session-start.sh` 无法运行，请检查文件的执行权限 (`chmod +x .claude/hooks/*.sh`)。
+- 如果 `/start` 报错找不到技能，请确保 `CLAUDE.md` 位于项目根目录。

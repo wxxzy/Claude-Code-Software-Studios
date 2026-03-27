@@ -1,17 +1,22 @@
-# Active Hooks
+# 自动化钩子参考手册 (Hooks Reference)
 
-Hooks are configured in `.claude/settings.json` and fire automatically:
+本手册定义了 Universal Software Studio (USDS) 的自动化验证流程，以及它们在 Git 协作生命周期中的触发点。
 
-| Hook | Event | Trigger | Action |
-| ---- | ----- | ------- | ------ |
-| `validate-commit.sh` | PreToolUse (Bash) | `git commit` commands | Validates design doc sections, JSON data files, hardcoded values, TODO format |
-| `validate-push.sh` | PreToolUse (Bash) | `git push` commands | Warns on pushes to protected branches (develop/main) |
-| `validate-assets.sh` | PostToolUse (Write/Edit) | Asset file changes | Checks naming conventions and JSON validity for files in `assets/` |
-| `session-start.sh` | SessionStart | Session begins | Loads sprint context, milestone, git activity; detects and previews active session state file for recovery |
-| `detect-gaps.sh` | SessionStart | Session begins | Detects fresh projects (suggests /start) and missing documentation when code/prototypes exist, suggests /reverse-document or /project-stage-detect |
-| `pre-compact.sh` | PreCompact | Context compression | Dumps session state (active.md, modified files, WIP design docs) into conversation before compaction so it survives summarization |
-| `session-stop.sh` | Stop | Session ends | Summarizes accomplishments and updates session log |
-| `log-agent.sh` | SubagentStart | Agent spawned | Audit trail of all subagent invocations with timestamps |
+## 1. 会话生命周期 (Session Lifecycle)
 
-Hook reference documentation: `.claude/docs/hooks-reference/`
-Hook input schema documentation: `.claude/docs/hooks-reference/hook-input-schemas.md`
+- **`session-start.sh`**: **[Trigger: Startup]** 自动扫描 `backlog.md` 和 PRD 状态。
+- **`detect-gaps.sh`**: **[Trigger: Startup]** 自动检测“代码有变但没写文档”的工程缺口。
+- **`pre-compact.sh`**: **[Trigger: Before Compression]** 在 Claude 压缩上下文前，自动提取并保护当前任务摘要。
+- **`session-stop.sh`**: **[Trigger: Close]** 会话结束时生成工作日报快照。
+
+## 2. 提交与推送门控 (Gatekeeping)
+
+- **`validate-commit.sh`**: **[Trigger: git commit]** 扫描硬编码密钥、Magic Numbers 和 TODO 格式。
+- **`validate-push.sh`**: **[Trigger: git push]** 强制运行单元测试，确保推送到 `main` 分支的代码是 100% 绿色的。
+
+## 3. 审计与追踪 (Auditing)
+
+- **`log-agent.sh`**: **[Trigger: Subagent Start]** 自动记录每一个子代理的职责、目标和调用链，存储在 `production/session-logs/`。
+
+## 4. 协作约束 (Collaboration)
+- **拒绝规则**: 如果钩子返回错误，Claude 会被强制终止当前的写入或提交动作，直到用户通过 `replace` 修复了合规性问题。

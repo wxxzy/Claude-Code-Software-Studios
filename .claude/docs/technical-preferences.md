@@ -1,48 +1,26 @@
-# Technical Preferences
+# 技术偏好库 (Technical Preferences)
 
-<!-- Populated by /setup-engine. Updated as the user makes decisions throughout development. -->
-<!-- All agents reference this file for project-specific standards and conventions. -->
+本项目的所有技术决策必须遵循以下偏好。这些偏好由 `technical-architect` 维护，任何变更需经过 ADR 评审。
 
-## Engine & Language
+## 1. 语言与框架
+- **后端**: [待定 - 通过 /setup-stack 初始化]
+- **前端**: [待定 - 通过 /setup-stack 初始化]
+- **测试**: 优先使用项目原生测试框架 (如 pytest, jest)。
 
-- **Engine**: [TO BE CONFIGURED — run /setup-engine]
-- **Language**: [TO BE CONFIGURED]
-- **Rendering**: [TO BE CONFIGURED]
-- **Physics**: [TO BE CONFIGURED]
+## 2. 代码风格
+- **格式化**: 必须使用项目配置文件（如 .prettierrc, pyproject.toml）指定的工具。
+- **命名**: 变量使用 `snake_case` (后端) 或 `camelCase` (前端)。
+- **类型**: 必须使用静态类型检查 (Type Hints / TypeScript)。
 
-## Naming Conventions
+## 3. API 与 数据
+- **格式**: 统一使用 JSON。
+- **日期**: 必须使用 ISO 8601 格式，且统一为 UTC 时间。
+- **分页**: 所有列表 API 必须支持基于游标或偏移的分页。
 
-- **Classes**: [TO BE CONFIGURED]
-- **Variables**: [TO BE CONFIGURED]
-- **Signals/Events**: [TO BE CONFIGURED]
-- **Files**: [TO BE CONFIGURED]
-- **Scenes/Prefabs**: [TO BE CONFIGURED]
-- **Constants**: [TO BE CONFIGURED]
+## 4. 安全与认证
+- **Secrets**: 严禁在代码中硬编码任何密钥。
+- **Auth**: [待定 - 推荐使用 JWT 或 OAuth 2.0]。
 
-## Performance Budgets
-
-- **Target Framerate**: [TO BE CONFIGURED]
-- **Frame Budget**: [TO BE CONFIGURED]
-- **Draw Calls**: [TO BE CONFIGURED]
-- **Memory Ceiling**: [TO BE CONFIGURED]
-
-## Testing
-
-- **Framework**: [TO BE CONFIGURED]
-- **Minimum Coverage**: [TO BE CONFIGURED]
-- **Required Tests**: Balance formulas, gameplay systems, networking (if applicable)
-
-## Forbidden Patterns
-
-<!-- Add patterns that should never appear in this project's codebase -->
-- [None configured yet — add as architectural decisions are made]
-
-## Allowed Libraries / Addons
-
-<!-- Add approved third-party dependencies here -->
-- [None configured yet — add as dependencies are approved]
-
-## Architecture Decisions Log
-
-<!-- Quick reference linking to full ADRs in docs/architecture/ -->
-- [No ADRs yet — use /architecture-decision to create one]
+## 5. 基础设施
+- **容器化**: 所有服务必须提供 `Dockerfile`。
+- **部署**: [待定 - 推荐 CI/CD 自动部署]。

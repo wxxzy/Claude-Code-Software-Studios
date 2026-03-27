@@ -10,13 +10,46 @@
 
 ## 🌟 核心设计理念：协作而非自主 (Collaboration, not Autonomy)
 
-USDS 拒绝“黑盒式”的代码生成。我们认为高质量的软件源于严谨的决策链。所有的 AI 代理均强制执行 **“五步协作法”**：
+所有的 AI 代理均强制执行 **“五步协作法”**：
+**提问 (Question) -> 方案 (Options) -> 决策 (Decision) -> 草案 (Draft) -> 批准 (Approval)**
 
-1.  **提问 (Question)**：澄清模糊需求，拒绝猜测。
-2.  **方案 (Options)**：提供 2-3 个技术选型并对比优劣。
-3.  **决策 (Decision)**：由用户（人类开发者）拍板路径。
-4.  **草案 (Draft)**：展示代码片段、API 契约或逻辑流。
-5.  **批准 (Approval)**：获得授权后方可执行写入。
+---
+
+## 🚀 快速开始与操作指令 (Operational Guide)
+
+在项目根目录启动 `claude` 后，请根据您的场景直接运行以下指令：
+
+### 1. 新成员入职 (First Time Only)
+如果您是第一次加入使用 USDS 的团队，请先运行引导：
+```bash
+/onboard
+```
+
+### 2. 场景 A：从零开始新项目 (Greenfield)
+按照以下顺序执行指令，完成从想法到任务的转化：
+```bash
+/start                       # 启动引导并选择“新项目”
+/discovery "我的想法是..."     # 生成需求文档 (PRD)
+/setup-stack                 # 选择技术栈并生成项目骨架
+/arch-design                 # 定义 API 与数据库模型 (ADR)
+/sprint-kickoff              # 将架构拆解为具体任务 (Backlog)
+```
+
+### 3. 场景 B：维护/接手已有项目 (Brownfield)
+如果您需要分析一个现有的代码库，请执行：
+```bash
+/start                       # 启动引导并选择“维护项目”
+/project-scan                # 自动分析项目架构与技术债
+/reverse-document            # 为核心代码反向生成 PRD 文档
+```
+
+### 4. 场景 C：开发、评审与交付 (Daily Workflow)
+完成具体代码编写后的质量闭环：
+```bash
+/review                      # 让架构师评审您的代码实现
+/gate-check                  # 交付前最后的质量审计 (Checklist)
+/summarize-arch              # 定期将 ADR 汇总至架构快照
+```
 
 ---
 
@@ -52,34 +85,38 @@ USDS 拒绝“黑盒式”的代码生成。我们认为高质量的软件源于
 
 ---
 
-## 🤝 团队协作与分发 (Team Collaboration)
+## 🤝 团队分发与同步 (Team Sync)
 
-USDS 设计之初就考虑了团队共享。以下是三种推荐的使用方式：
+### 1. 一键安装 (Zero-Clone Install)
+如果您想在已有项目中快速启用 USDS，请在项目根目录下根据您的操作系统执行以下命令：
 
-### 1. 黄金模板模式 (推荐)
-将本项目作为 Git 仓库模板。团队成员在创建新项目时选择 **"Use this template"**，即可自动继承所有的代理、技能和规则配置。
-
-### 2. 存量项目注入
-对于已有的项目，可以通过运行脚本一键注入 USDS 核心组件：
+**Windows (PowerShell):**
 ```powershell
-# 运行项目中的安装脚本 (Windows)
-powershell -ExecutionPolicy Bypass -File ./scripts/install-usds.ps1
+irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/main/scripts/install-usds.ps1 | iex
 ```
 
-### 3. 规范同步
-**务必将 `.claude/` 目录提交至 Git 仓库**。
-这样团队中的所有成员（只要安装了 Claude Code）都能在本地会话中拥有完全一致的代理行为和审查规则，实现“工程标准即配置”。
+**macOS / Linux (Bash):**
+```bash
+curl -fsSL https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/main/scripts/install-usds.sh | bash
+```
 
-### 4. 新人上手
-新成员加入项目后，请引导其运行 **`/onboard`** 指令。AI 代理将亲自讲解“五步协作法”，确保团队协作丝滑顺畅。
+### 2. 将 USDS 提交至 Git (关键)
+为了让全员共享这些技能，**必须**提交 `.claude` 目录。请确保您的 `.gitignore` **没有**排除这些文件：
+```bash
+git add .claude/agents/ .claude/skills/ .claude/rules/ .claude/hooks/
+git add CLAUDE.md README.md UNIVERSAL-STUDIO.md
+git commit -m "chore: 部署 Universal Software Studio (USDS) 基础设施"
+git push
+```
 
 ---
 
-## 🚀 快速开始
+## 📜 底层规则 (Engineering Standards)
 
-1. **环境**: 安装 [Claude Code](https://docs.anthropic.com/en/docs/claude-code)。
-2. **初始化**: 在项目根目录运行 `claude`。
-3. **第一步**: 输入 **`/start`** 或 **`/onboard`**。
+USDS 自动根据文件路径执行以下校验规则：
+- `src/**`: 遵循 `.claude/rules/global-standards.md`
+- `tests/**`: 遵循 `.claude/rules/test-conventions.md`
+- `docs/**`: 遵循 `.claude/rules/doc-standards.md`
 
 ---
 *Powered by Universal Software Studio — 像经营工作室一样编写代码。*
