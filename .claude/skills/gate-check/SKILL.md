@@ -16,8 +16,10 @@
     - `technical-architect` 确认 ADR 和 API 契约是否已满足。
     - `lead-developer` 提供测试运行结果。
 3.  **清单审计**: 基于 `.claude/universal/docs/templates/RELEASE-CHECKLIST.md` 执行检查。
-4.  **生成报告**: 产出 `docs/reviews/RELEASE-CHECKLIST-xxx.md`。
-5.  **结论声明**: 明确给出 [通过]、[附带风险通过] 或 [拒绝] 的决策。
+4.  **生成报告**: 产出清单摘要。
+5.  **结论声明**: 
+    - 你必须使用 `ask_user` 工具，明确提供 [允许发布]、[附带风险通过] 和 [拒绝发布] 三个按钮。
+    - 只有在工具返回明确点击后，此技能方可结束。
 
 ## 成功门控 (Success Gate)
 

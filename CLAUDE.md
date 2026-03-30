@@ -6,6 +6,7 @@
 
 - `/start`: **智能启动引导**。由 `delivery-manager` 主导。
 - `/onboard`: **团队入职引导**。向新团队成员介绍 USDS 协作流程。
+- `/update`: **自动检查更新**。将工作室基础设施同步至 GitHub 最新版本。
 - `/discovery`: **需求发现**。将模糊想法转化为 `docs/specs/PRD.md`。
 - `/project-scan`: **项目扫描与映射**。分析已有项目的架构并识别技术债。
 - `/setup-stack`: **技术选型与初始化**。由 `technical-architect` 引导并生成项目骨架。

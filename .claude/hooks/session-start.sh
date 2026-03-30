@@ -74,6 +74,23 @@ fi
 # --- Universal Studio Context ---
 echo ""
 echo "=== Universal Software Studio Status ==="
+
+# 1. Check for Updates
+LOCAL_VERSION_FILE=".claude/VERSION"
+REMOTE_VERSION_URL="https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/.claude/VERSION"
+
+if [ -f "$LOCAL_VERSION_FILE" ]; then
+    LOCAL_VERSION=$(cat "$LOCAL_VERSION_FILE" | tr -d '[:space:]')
+    # Use a 2-second timeout to avoid blocking if offline
+    REMOTE_VERSION=$(curl -s --max-time 2 "$REMOTE_VERSION_URL" | tr -d '[:space:]')
+
+    if [ -n "$REMOTE_VERSION" ] && [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
+        echo "🚀 NEW VERSION AVAILABLE: $REMOTE_VERSION (Current: $LOCAL_VERSION)"
+        echo "👉 Run '/update' to get the latest USDS features."
+        echo ""
+    fi
+fi
+
 if [ ! -d "docs/specs" ] || [ -z "$(ls -A docs/specs 2>/dev/null)" ]; then
     echo "🚨 No project requirements found in docs/specs/."
     echo "👉 Suggestion: Run '/discovery' to start a new project."
