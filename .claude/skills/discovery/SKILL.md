@@ -1,3 +1,10 @@
+---
+name: discovery
+description: 结构化需求发现。当用户提出一个新想法、需要把模糊需求转化为 PRD（产品需求文档）并写入 docs/specs/ 时使用。
+context: fork
+agent: product-director
+---
+
 # 技能：需求发现 (/discovery)
 
 **执行代理**: `product-director` (产品总监)

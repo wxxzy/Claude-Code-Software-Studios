@@ -1,47 +1,41 @@
 #!/bin/bash
 # USDS Hook: detect-gaps.sh
-# 识别代码与文档之间的同步缺口
+# 识别代码与文档之间的同步缺口 — 只在发现缺口时输出，无缺口则静默
 
-echo "=== USDS Gap Detection — Project Integrity Check ==="
+GAPS=""
 
-# --- Check 1: 业务代码与需求文档 (src/ vs docs/specs/) ---
+# Check 1: 业务代码有但无 PRD
 if [ -d "src" ]; then
-    CODE_COUNT=$(find src -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.go" \) 2>/dev/null | wc -l)
-    CODE_COUNT=$(echo "$CODE_COUNT" | tr -d ' ')
-    
+    CODE_COUNT=$(find src -type f \( -name "*.py" -o -name "*.js" -o -name "*.ts" -o -name "*.go" \) 2>/dev/null | wc -l | tr -d ' ')
     if [ "$CODE_COUNT" -gt 20 ]; then
-        PRD_COUNT=$(find docs/specs -name "PRD-*.md" 2>/dev/null | wc -l)
-        PRD_COUNT=$(echo "$PRD_COUNT" | tr -d ' ')
-        
+        PRD_COUNT=$(find docs/specs -name "PRD-*.md" 2>/dev/null | wc -l | tr -d ' ')
         if [ "$PRD_COUNT" -lt 1 ]; then
-            echo "⚠️  GAP: Substantial codebase ($CODE_COUNT files) but no PRD found in docs/specs/."
-            echo "👉 Suggestion: Run '/discovery' to capture business intent."
+            GAPS="$GAPS no-prd(/discovery)"
         fi
     fi
 fi
 
-# --- Check 2: 核心系统与架构决策 (src/core/ vs docs/arch/) ---
+# Check 2: 核心系统无 ADR
 if [ -d "src/core" ] || [ -d "src/api" ]; then
-    ADR_COUNT=$(find docs/arch -name "ADR-*.md" 2>/dev/null | wc -l)
-    ADR_COUNT=$(echo "$ADR_COUNT" | tr -d ' ')
-    
+    ADR_COUNT=$(find docs/arch -name "ADR-*.md" 2>/dev/null | wc -l | tr -d ' ')
     if [ "$ADR_COUNT" -lt 1 ]; then
-        echo "⚠️  GAP: Core systems exist but no ADR found in docs/arch/."
-        echo "👉 Suggestion: Run '/arch-design' to document architecture decisions."
+        GAPS="$GAPS no-adr(/arch-design)"
     fi
 fi
 
-# --- Check 3: 交付计划检测 (production/backlog.md) ---
+# Check 3: 无 backlog
 if [ ! -f "production/backlog.md" ]; then
-    echo "⚠️  GAP: No production backlog found."
-    echo "👉 Suggestion: Run '/sprint-kickoff' to break down tasks."
+    GAPS="$GAPS no-backlog(/sprint-kickoff)"
 fi
 
-# --- Check 4: 环境与规则配置 ---
+# Check 4: 无技术偏好配置
 if [ ! -f "docs/arch/TECHNICAL-PREFERENCES.md" ]; then
-    echo "⚠️  GAP: Technical preferences not defined."
-    echo "👉 Suggestion: Run '/setup-stack' to initialize project stack."
+    GAPS="$GAPS no-tech-prefs(/setup-stack)"
 fi
 
-echo "==================================================="
+# 有缺口才输出，无缺口静默
+if [ -n "$GAPS" ]; then
+    echo "⚠️ GAPS:$GAPS"
+fi
+
 exit 0

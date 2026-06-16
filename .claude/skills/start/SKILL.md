@@ -1,3 +1,10 @@
+---
+name: start
+description: 工作室智能启动引导。当用户首次进入项目、不确定从何开始，或想了解该走新项目/维护项目/入职哪条路径时使用。
+context: fork
+agent: delivery-manager
+---
+
 # 技能：工作室启动与引导 (/start)
 
 **执行代理**: `delivery-manager` (交付经理)

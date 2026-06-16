@@ -1,3 +1,10 @@
+---
+name: update
+description: 自动检查并同步工作室基础设施至 GitHub 最新版本。当用户要求更新 USDS、检查新版本或同步 .claude 配置时使用。
+context: fork
+agent: delivery-manager
+---
+
 # 技能：工作室自动更新 (/update)
 
 **执行代理**: `delivery-manager` (交付经理)

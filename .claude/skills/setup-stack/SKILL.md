@@ -1,3 +1,10 @@
+---
+name: setup-stack
+description: 技术选型与项目骨架初始化。当用户确定需求后需要选择技术栈、生成项目脚手架与依赖文件时使用。
+context: fork
+agent: technical-architect
+---
+
 # 技能：技术栈初始化 (/setup-stack)
 
 **执行代理**: `technical-architect` (技术架构师)

@@ -28,22 +28,36 @@ fi
 
 WARNINGS=""
 
-# Check design documents for required sections
-DESIGN_FILES=$(echo "$STAGED" | grep -E '^design/gdd/')
-if [ -n "$DESIGN_FILES" ]; then
+# Check PRD documents for required sections (per doc-standards.md)
+PRD_FILES=$(echo "$STAGED" | grep -E '^docs/specs/.*\.md$')
+if [ -n "$PRD_FILES" ]; then
     while IFS= read -r file; do
         if [[ "$file" == *.md ]] && [ -f "$file" ]; then
-            for section in "Overview" "Player Fantasy" "Detailed" "Formulas" "Edge Cases" "Dependencies" "Tuning Knobs" "Acceptance Criteria"; do
+            for section in "业务目标" "用户故事" "验收标准"; do
                 if ! grep -qi "$section" "$file"; then
-                    WARNINGS="$WARNINGS\nDESIGN: $file missing required section: $section"
+                    WARNINGS="$WARNINGS\nPRD: $file missing required section: $section"
                 fi
             done
         fi
-    done <<< "$DESIGN_FILES"
+    done <<< "$PRD_FILES"
 fi
 
-# Validate JSON data files -- block invalid JSON
-DATA_FILES=$(echo "$STAGED" | grep -E '^assets/data/.*\.json$')
+# Check ADR documents for required sections (per doc-standards.md)
+ADR_FILES=$(echo "$STAGED" | grep -E '^docs/arch/.*\.md$')
+if [ -n "$ADR_FILES" ]; then
+    while IFS= read -r file; do
+        if [[ "$file" == *.md ]] && [ -f "$file" ]; then
+            for section in "背景" "决策" "权衡" "替代方案"; do
+                if ! grep -qi "$section" "$file"; then
+                    WARNINGS="$WARNINGS\nADR: $file missing required section: $section"
+                fi
+            done
+        fi
+    done <<< "$ADR_FILES"
+fi
+
+# Validate JSON config files -- block invalid JSON
+DATA_FILES=$(echo "$STAGED" | grep -E '\.json$')
 if [ -n "$DATA_FILES" ]; then
     # Find a working Python command
     PYTHON_CMD=""
@@ -66,19 +80,6 @@ if [ -n "$DATA_FILES" ]; then
             fi
         fi
     done <<< "$DATA_FILES"
-fi
-
-# Check for hardcoded gameplay values in gameplay code
-# Uses grep -E (POSIX extended) instead of grep -P (Perl) for cross-platform compatibility
-CODE_FILES=$(echo "$STAGED" | grep -E '^src/gameplay/')
-if [ -n "$CODE_FILES" ]; then
-    while IFS= read -r file; do
-        if [ -f "$file" ]; then
-            if grep -nE '(damage|health|speed|rate|chance|cost|duration)[[:space:]]*[:=][[:space:]]*[0-9]+' "$file" 2>/dev/null; then
-                WARNINGS="$WARNINGS\nCODE: $file may contain hardcoded gameplay values. Use data files."
-            fi
-        fi
-    done <<< "$CODE_FILES"
 fi
 
 # Check for TODO/FIXME without assignee -- uses grep -E instead of grep -P

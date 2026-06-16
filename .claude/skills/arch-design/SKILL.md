@@ -1,3 +1,10 @@
+---
+name: arch-design
+description: 架构设计与影响分析。当用户需要定义 API 契约、数据库模型或记录架构决策（ADR）到 docs/arch/ 时使用。
+context: fork
+agent: technical-architect
+---
+
 # 技能：架构设计与选型 (/arch-design)
 
 **执行代理**: `technical-architect` (技术架构师)
@@ -28,3 +35,19 @@
 - 生成了 `docs/arch/ADR-xxx.md`。
 - 包含了核心 API 契约或数据库结构描述。
 - 用户通过 `ask_user` 明确表示了批准。
+
+## 输出约束 (Output Budget)
+
+**[强制]** 获得批准并写入文件后，返回主上下文只输出：
+
+```
+架构决策已记录。
+
+- `docs/arch/ADR-[xxx].md` — [决策标题，一句话]
+- 核心方案：[选定方案名称]
+- 关键权衡：[一句话]
+
+如需查看完整设计，打开上述文件。
+```
+
+不得在返回摘要中重复 ADR 正文内容。

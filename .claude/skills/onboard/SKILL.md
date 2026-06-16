@@ -1,3 +1,10 @@
+---
+name: onboard
+description: 团队新人入职引导。当新成员需要了解 USDS 的五步协作法、代理分工与目录规范时使用。
+context: fork
+agent: delivery-manager
+---
+
 # 技能：新人入职引导 (/onboard)
 
 **执行代理**: `delivery-manager` (交付经理)

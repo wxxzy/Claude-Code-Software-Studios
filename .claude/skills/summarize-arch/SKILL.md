@@ -1,3 +1,10 @@
+---
+name: summarize-arch
+description: 架构快照与总结。当多个 ADR 累积后需要压缩汇总为架构最终态文档（ARCHITECTURE-STATE.md）时使用。
+context: fork
+agent: technical-architect
+---
+
 # 技能：架构快照与总结 (/summarize-arch)
 
 **执行代理**: `technical-architect` (技术架构师)
@@ -24,3 +31,17 @@
 - 产出了 `docs/arch/ARCHITECTURE-STATE.md`。
 - 新文档包含了所有核心决策（数据库结构、API 定义、技术栈）。
 - 上下文效率明显提升。
+
+## 输出约束 (Output Budget)
+
+**[强制]** 写入文件后，返回主上下文只输出：
+
+```
+架构快照已更新。
+
+- `docs/arch/ARCHITECTURE-STATE.md` — 合并了 [X] 个 ADR
+- 覆盖决策：[技术栈 / API 契约 / 数据库结构，列出命中的类别]
+- 标记为 Merged：[ADR 编号列表]
+```
+
+不得在返回摘要中重复 ARCHITECTURE-STATE.md 正文内容。
