@@ -1,6 +1,6 @@
 # Universal Software Studio — Claude Code Integration
 
-**v2.0 双模态**：Vibe Mode（探索/原型）与 Studio Mode（严肃/生产）共存。
+**双模态**：Vibe Mode（探索/原型）与 Studio Mode（严肃/生产）共存。
 
 ## 模式声明
 
