@@ -16,6 +16,10 @@ CLAUDE.local.md
 production/session-logs/
 production/session-state/*.md
 
+# === USDS Runtime ===
+.worktrees/
+.usds-manifest
+
 # === Internal Planning (not for public) ===
 docs/IMPROVEMENTS-PROPOSAL.md
 docs/MULTI-STAGE-DOCUMENT-WORKFLOW.md

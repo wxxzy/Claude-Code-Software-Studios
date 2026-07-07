@@ -53,8 +53,8 @@ curl -fsSL https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/
 
 | Profile | 安装内容 | 适用人群 |
 |---|---|---|
-| `minimal` | 核心规则 + 基础技能（`/start`, `/onboard`, `/mode-switch`, `/update`） | 想自己组装的高手 |
-| `vibe` | minimal + Vibe Pack（4 skill + 4 agent + 2 template） | 原型玩家、个人项目 |
+| `minimal` | 核心规则 + 基础技能（`/start`, `/onboard`, `/mode-switch`, `/update`, `/cost-report`, `/debt-log`, `/micro-adr`） | 想自己组装的高手 |
+| `vibe` | minimal + Vibe Pack（7 skill + 4 agent + 2 template） | 原型玩家、个人项目 |
 | `studio` | minimal + Studio Pack（8 skill + 8 agent + 4 template） | 严肃团队、生产项目 |
 | `full` | minimal + Vibe + Studio | Hybrid 混合项目 |
 
@@ -124,6 +124,9 @@ irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/
 /vibe-start "我想做一个能记账的小工具"   # 3-5 轮对话捕获意图 → lite-spec.md
 /prototype                             # 15 分钟内出可跑 demo → sandbox/<name>/
 /vibe-check                            # 每 3-5 轮迭代校准意图 → intent-log.md
+/taste-review                          # 审美/体验维度评审 → docs/reviews/
+/explain-back                          # 隔几天回来先跑这个恢复上下文
+/branch-vibe                           # 想尝试完全不同的方向 → 平行 worktree
 /graduate                              # 原型稳定后晋升到 src/
 ```
 
@@ -154,6 +157,10 @@ irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/
 - **Prompt Refiner** — 模糊意图 → 可执行 spec
 - **Explainer** — 用非技术语言汇报状态
 
+### 观测性角色（跨模式）
+- **Cost Accountant** — 追踪 token / 时间 / API 成本
+- **Debt Auditor** — 追踪技术债，让妥协可见
+
 ### Studio Mode 角色
 - **Product Director** — 负责 `docs/specs/`
 - **Technical Architect** — 负责 `docs/arch/`
@@ -174,9 +181,15 @@ irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/
 | `/onboard` | 共享 | Delivery Manager | 协议演练 |
 | `/mode-switch` | 共享 | Delivery Manager | `.usds-mode` |
 | `/update` | 共享 | Delivery Manager | 同步框架更新 |
+| `/cost-report` | 共享 | Cost Accountant | `docs/cost-ledger.md` |
+| `/debt-log` | 共享 | Debt Auditor | `docs/debt-ledger.md` |
+| `/micro-adr` | 共享 | Technical Architect | `docs/arch/micro-adr.md` |
 | `/vibe-start` | Vibe | Prompt Refiner | `docs/specs/lite-spec.md` |
 | `/prototype` | Vibe | Explorer | `sandbox/<name>/` |
 | `/vibe-check` | Vibe | Explainer | `docs/specs/intent-log.md` |
+| `/taste-review` | Vibe | Stylist | `docs/reviews/taste-<date>.md` |
+| `/branch-vibe` | Vibe | Explorer | 新 worktree + 独立 sandbox |
+| `/explain-back` | Vibe | Explainer | 一次性汇报（不落盘） |
 | `/graduate` | Vibe→Studio | Delivery Manager | 迁移到 `src/` |
 | `/discovery` | Studio | Product Director | `docs/specs/PRD.md` |
 | `/project-scan` | Studio | Architect | `docs/arch/SYSTEM-MAP.md` |

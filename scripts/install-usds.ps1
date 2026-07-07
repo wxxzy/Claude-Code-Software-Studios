@@ -89,9 +89,17 @@ $CoreFiles = @(
     ".claude/skills/onboard",
     ".claude/skills/update",
     ".claude/skills/mode-switch",
+    ".claude/skills/cost-report",
+    ".claude/skills/debt-log",
+    ".claude/skills/micro-adr",
     ".claude/agents/delivery-manager.md",
+    ".claude/agents/cost-accountant.md",
+    ".claude/agents/debt-auditor.md",
     ".claude/docs/quick-start.md",
-    ".claude/docs/directory-structure.md"
+    ".claude/docs/directory-structure.md",
+    ".claude/docs/templates/cost-ledger.md",
+    ".claude/docs/templates/debt-ledger.md",
+    ".claude/docs/templates/micro-adr.md"
 )
 
 $VibeFiles = @(
@@ -100,6 +108,9 @@ $VibeFiles = @(
     ".claude/skills/prototype",
     ".claude/skills/vibe-check",
     ".claude/skills/graduate",
+    ".claude/skills/taste-review",
+    ".claude/skills/branch-vibe",
+    ".claude/skills/explain-back",
     ".claude/agents/explorer.md",
     ".claude/agents/stylist.md",
     ".claude/agents/prompt-refiner.md",
