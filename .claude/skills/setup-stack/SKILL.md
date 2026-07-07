@@ -42,7 +42,22 @@ agent: technical-architect
 
 ---
 
-## 协作路径 (Escalation)
+## 输出约束 (Output Budget)
 
-- 必须基于 `docs/specs/PRD-*.md` 进行选型建议。
-- 完成后，将接力棒交给 `delivery-manager` 进行 `/sprint-kickoff`。
+**[强制]** 创建骨架文件后，返回主上下文只输出：
+
+```
+技术栈初始化完成。
+
+- 选定方案：[方案名]（[主要技术，3-4 个关键词]）
+- 生成文件：[X] 个（`src/`、`tests/`、依赖清单）
+- `docs/arch/TECHNICAL-PREFERENCES.md` 已更新
+
+下一步：`/sprint-kickoff`
+```
+
+不得在摘要中展开目录结构或依赖列表正文。
+
+## 协作路径
+
+- 完成后，交棒 `delivery-manager` 执行 `/sprint-kickoff`。

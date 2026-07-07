@@ -31,4 +31,13 @@ agent: delivery-manager
 - 成员确认已阅读并理解 `docs/COLLABORATION-GUIDE.md`。
 - 成员成功进行了一次模拟决策互动。
 
----
+## 输出约束 (Output Budget)
+
+**[强制]** 完成引导后，返回主上下文只输出：
+
+```
+入职引导完成。成员已了解 USDS 五步协作法和代理分工。
+建议从 `/discovery` 或 `/project-scan` 开始第一个实际任务。
+```
+
+不得重复展开代理职责列表或工作室层级说明。

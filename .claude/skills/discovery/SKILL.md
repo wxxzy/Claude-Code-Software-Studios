@@ -37,7 +37,22 @@ agent: product-director
 
 ---
 
-## 协作路径 (Escalation)
+## 输出约束 (Output Budget)
 
-- 必须基于 `UNIVERSAL-STUDIO.md` 的宪法进行。
-- 如果 PRD 中涉及复杂的技术方案，必须调用 `technical-architect` 进行可行性评估。
+**[强制]** 写入文件后，返回主上下文只输出：
+
+```
+需求发现完成。
+
+- `docs/specs/PRD-[xxx].md` — [产品名称，一句话]
+- 核心用户故事：[X] 条
+- 关键边界：[In Scope 和 Out of Scope 各一句]
+
+如需查看完整需求，打开上述文件。
+```
+
+不得在返回摘要中重复 PRD 正文。
+
+## 协作路径
+
+- PRD 批准后，交棒 `technical-architect` 执行 `/arch-design`。

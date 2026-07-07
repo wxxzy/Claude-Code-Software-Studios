@@ -1,106 +1,273 @@
-# Universal Software Studio (USDS)
+# Universal Software Studio (USDS) v2
 
 <p align="center">
-  <strong>基于 Claude Code 的工业级通用软件开发工作室框架</strong>
+  <strong>基于 Claude Code 的双模态软件开发工作室框架</strong>
   <br />
-  10 个核心代理 • 10 大工作流指令 • 5 步协作协议 • 纯净的通用软件工程实践
+  Vibe Mode（快速探索）× Studio Mode（严肃工程） · 按需安装 · 一键切换
 </p>
 
 ---
 
-## 🌟 核心设计理念：协作而非自主 (Collaboration, not Autonomy)
+## ✨ v2 核心变化：双模态架构
 
-所有的 AI 代理均强制执行 **“五步协作法”**：
-**提问 (Question) -> 方案 (Options) -> 决策 (Decision) -> 草案 (Draft) -> 批准 (Approval)**
+USDS v2 不再假设所有项目都是严肃工程。同一套框架现在同时服务两种场景：
 
----
+| 模式 | 场景 | 主要目录 | 主导规则 | 起手技能 |
+|---|---|---|---|---|
+| **Vibe Mode** | 探索、原型、个人玩具、周末项目 | `sandbox/**` | `vibe-mode.md`（宽松） | `/vibe-start` |
+| **Studio Mode** | 生产、团队、长期维护、客户交付 | `src/`, `docs/`, `tests/` | `global-standards.md`（严格） | `/discovery` |
+| **Hybrid Mode** | 一仓库两种共存 | 两者共存 | 按路径分派 | 按任务选 |
 
-## 🚀 快速开始与操作指令 (Operational Guide)
+模式由项目根目录的 `.usds-mode` 文件决定，可通过 `/mode-switch` 随时切换。
+两种模式之间通过 `/graduate` 单向晋升（Vibe → Studio）。
 
-在项目根目录启动 `claude` 后，直接运行以下指令：
-
-### 1. 第一次使用 (Onboarding)
-```bash
-/onboard                     # 学习协作协议与规范 (推荐首选)
-```
-
-### 2. 场景 A：从零开始新项目 (Greenfield)
-```bash
-/start                       # 启动引导并选择“新项目”
-/discovery "我的想法是..."     # 生成需求文档 (PRD)
-/setup-stack                 # 选择技术栈并生成项目骨架
-/arch-design                 # 定义 API 与数据库模型 (ADR)
-/sprint-kickoff              # 将架构拆解为具体任务 (Backlog)
-```
-
-### 3. 场景 B：维护已有项目 (Brownfield)
-```bash
-/start                       # 启动引导并选择“维护项目”
-/project-scan                # 自动分析项目架构与技术债
-/reverse-document            # 为核心代码反向生成说明文档
-```
-
-### 4. 场景 C：开发、评审与交付 (Daily Workflow)
-完成具体代码编写后的质量闭环：
-```bash
-/review                      # 让架构师评审您的代码实现
-/gate-check                  # 交付前最后的质量审计 (Checklist)
-/summarize-arch              # 定期将 ADR 汇总至架构快照
-```
+**共同底线**：无论哪种模式，密钥泄露、SQL 拼接、未验证输入、未锁版本依赖始终是 Hard Limits。
 
 ---
 
-## 👥 代理架构 (Agent Roster)
+## 🚀 一键安装（按需）
 
-### Tier 1: Directors (愿景与风险)
-- **Product Director**: 业务逻辑需求，负责 `docs/specs/PRD.md`。
-- **Technical Architect**: 技术架构，负责 `docs/arch/ADR.md` 与 API 契约。
-- **Delivery Manager**: 进度，负责 `production/backlog.md` 与风险预警。
+v2 支持**分层安装**：不再一次性塞全家桶。选择你实际需要的组合。
 
-### Tier 2: Leads (执行与质量)
-- **Lead Developer**: 实现标准制定者，负责核心重构与 `src/` 质量。
-- **QA Lead**: 质量审查，负责 `docs/reviews/RELEASE-CHECKLIST.md`。
+### Windows (PowerShell)
 
-### Tier 3: Specialists (纵深领域)
-- **Frontend/Backend Developer**: 具体端实现。
-- **Security/DevOps Engineer**: 安全审计与自动化部署。
----
+```powershell
+# 交互式安装（推荐首次使用）
+irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.ps1 | iex
 
-## 🛠️ 核心指令 (Slash Commands)
+# 或指定 profile
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.ps1))) -Profile vibe
+```
 
-| 指令 | 名称 | 负责代理 | 产出物 |
-| :--- | :--- | :--- | :--- |
-| **`/start`** | **智能引导** | `Delivery Manager` | 引导至正确路径 |
-| **`/onboard`** | **团队入职** | `Delivery Manager` | 协议演练与规范介绍 |
-| `/discovery` | **需求发现** | `Product Director` | `docs/specs/PRD.md` |
-| `/project-scan`| **项目扫描** | `Architect` | `docs/arch/SYSTEM-MAP.md` |
-| `/setup-stack` | **技术初始化**| `Architect` | 项目骨架与依赖文件 |
-| `/arch-design` | **架构设计** | `Architect` | `docs/arch/ADR.md` |
-| `/summarize-arch`| **架构总结** | `Architect` | 压缩 ADR 至最终态文档 |
-| `/sprint-kickoff`| **任务拆解** | `Delivery Manager` | `production/backlog.md` |
-| `/review` | **技术评审** | `Architect` | 深度代码审计报告 |
-| `/gate-check` | **质量审计** | `QA Lead` | `RELEASE-CHECKLIST.md` |
+### macOS / Linux
 
----
-
-## 🤝 团队同步与个人定制
-
-### 1. 一键安装
-- **Windows (PS):** `irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.ps1 | iex`
-- **macOS/Linux:** `curl -fsSL https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.sh | bash`
-
-### 2. 个人偏好设置 (本地覆盖)
-您可以创建以下文件自定义本地行为，这些文件已被 `.gitignore` 自动忽略：
-- **`CLAUDE.local.md`**: 自定义个人快捷指令或偏好模型。
-- **`.claude/settings.local.json`**: 自定义本地文件权限 (Allow/Deny)。
-*模板参考: `.claude/docs/*-template.*`*
-
-### 3. 提交至 Git
-**必须**提交 `.claude/` 目录以共享技能：
 ```bash
-git add .claude/ CLAUDE.md UNIVERSAL-STUDIO.md README.md
-git commit -m "chore: 部署 USDS 基础设施"
+# 交互式安装
+curl -fsSL https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.sh | bash
+
+# 或指定 profile
+curl -fsSL https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.sh | bash -s -- --profile vibe
+```
+
+### Profile 说明
+
+| Profile | 安装内容 | 适用人群 |
+|---|---|---|
+| `minimal` | 核心规则 + 基础技能（`/start`, `/onboard`, `/mode-switch`, `/update`） | 想自己组装的高手 |
+| `vibe` | minimal + Vibe Pack（4 skill + 4 agent + 2 template） | 原型玩家、个人项目 |
+| `studio` | minimal + Studio Pack（8 skill + 8 agent + 4 template） | 严肃团队、生产项目 |
+| `full` | minimal + Vibe + Studio | Hybrid 混合项目 |
+
+### 常用参数
+
+```bash
+--profile <name>   # 直接指定 profile
+--dry-run          # 预览会装什么，不动手
+--force            # 覆盖已存在文件（默认询问）
+--no-samples       # 不装示范 docs/
+--uninstall        # 根据 .usds-manifest 卸载
+--ref <branch>     # 指定分支/标签（默认 master）
+```
+
+### ⚠️ 远程管道安装的交互限制
+
+当你用 `curl ... | bash` 或 `irm ... | iex` 时，**stdin 已被下载流占用**，脚本无法读取键盘输入。这意味着：
+
+- ❌ 不能弹出交互式菜单让你选 profile
+- ❌ 不能询问是否覆盖已存在文件
+- ❌ 不能询问是否安装示范 docs/
+
+**推荐做法（二选一）**：
+
+**方案 A：显式传参绕过交互**（快速）
+
+```bash
+# macOS / Linux — 用 -s -- 把参数传给管道里的 bash
+curl -fsSL https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.sh | bash -s -- --profile vibe --force
+
+# Windows — 用 scriptblock 包装
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.ps1))) -Profile vibe -Force
+```
+
+**方案 B：先下载再执行**（推荐，可审计）
+
+```bash
+# macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.sh -o install-usds.sh
+less install-usds.sh          # 先看一眼再跑（可选）
+bash install-usds.sh          # 完整交互式菜单可用
+
+# Windows
+irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.ps1 -OutFile install-usds.ps1
+.\install-usds.ps1            # 完整交互式菜单可用
+```
+
+**CI / 无 tty 环境**：必须使用方案 A，并显式指定 `--profile` 和 `--force`，否则脚本会在等待输入时挂起。
+
+### 安全保证
+
+- ✋ **绝不静默覆盖** `README.md` — 用户已有 README 时保留
+- ✋ **绝不静默覆盖** `docs/` — 用户已有 docs 目录时跳过示范
+- ✋ **每次覆盖前询问** — 除非显式 `--force`
+- ✅ **可完全卸载** — 通过 `.usds-manifest` 追踪安装项
+- ✅ **可预演** — `--dry-run` 只显示计划
+
+---
+
+## 🎯 快速开始
+
+安装后启动 `claude`，根据你选的模式使用对应技能：
+
+### 🌱 Vibe Mode 全链路
+
+```bash
+/vibe-start "我想做一个能记账的小工具"   # 3-5 轮对话捕获意图 → lite-spec.md
+/prototype                             # 15 分钟内出可跑 demo → sandbox/<name>/
+/vibe-check                            # 每 3-5 轮迭代校准意图 → intent-log.md
+/graduate                              # 原型稳定后晋升到 src/
+```
+
+### 🏢 Studio Mode 全链路
+
+```bash
+/onboard                    # 学习协作协议
+/discovery "项目想法"        # 生成 PRD → docs/specs/PRD.md
+/setup-stack                # 技术选型与骨架初始化
+/arch-design                # 定义 API 与数据模型 → docs/arch/ADR.md
+/sprint-kickoff             # 拆解 Backlog → production/backlog.md
+# 编码...
+/review                     # 技术评审
+/gate-check                 # 发布质量审计
+```
+
+### 🔀 Hybrid Mode
+
+自由组合两套技能，用 `/mode-switch` 切换默认场景。
+
+---
+
+## 👥 代理架构
+
+### Vibe Mode 角色（v2 新增）
+- **Explorer** — 负责 `sandbox/**` 快速原型
+- **Stylist** — 视觉/交互氛围、审美选型
+- **Prompt Refiner** — 模糊意图 → 可执行 spec
+- **Explainer** — 用非技术语言汇报状态
+
+### Studio Mode 角色
+- **Product Director** — 负责 `docs/specs/`
+- **Technical Architect** — 负责 `docs/arch/`
+- **Lead Developer** — 负责 `src/`, `tests/`
+- **Delivery Manager** — 负责 `production/`
+- **QA Lead** — 负责 `docs/reviews/`
+- **Frontend/Backend Developer, Security/DevOps Engineer** — 纵深领域
+
+完整定义见 `.claude/agents/`。
+
+---
+
+## 🛠️ 技能全表
+
+| 技能 | 模式 | 主导角色 | 产出物 |
+|---|---|---|---|
+| `/start` | 共享 | Delivery Manager | 引导到正确入口 |
+| `/onboard` | 共享 | Delivery Manager | 协议演练 |
+| `/mode-switch` | 共享 | Delivery Manager | `.usds-mode` |
+| `/update` | 共享 | Delivery Manager | 同步框架更新 |
+| `/vibe-start` | Vibe | Prompt Refiner | `docs/specs/lite-spec.md` |
+| `/prototype` | Vibe | Explorer | `sandbox/<name>/` |
+| `/vibe-check` | Vibe | Explainer | `docs/specs/intent-log.md` |
+| `/graduate` | Vibe→Studio | Delivery Manager | 迁移到 `src/` |
+| `/discovery` | Studio | Product Director | `docs/specs/PRD.md` |
+| `/project-scan` | Studio | Architect | `docs/arch/SYSTEM-MAP.md` |
+| `/setup-stack` | Studio | Architect | 项目骨架 |
+| `/arch-design` | Studio | Architect | `docs/arch/ADR.md` |
+| `/summarize-arch` | Studio | Architect | 架构快照 |
+| `/sprint-kickoff` | Studio | Delivery Manager | `production/backlog.md` |
+| `/review` | Studio | Architect | 代码审计报告 |
+| `/gate-check` | Studio | QA Lead | 发布 Checklist |
+
+---
+
+## 📂 目录约定
+
+```
+<project-root>/
+├── .usds-mode              ← 模式声明（由 install/mode-switch 生成）
+├── .usds-manifest          ← 安装清单（用于卸载）
+├── CLAUDE.md               ← Claude Code 常驻上下文
+├── .claude/
+│   ├── rules/              ← 规则文件（按 profile 装载）
+│   ├── skills/             ← 技能定义（按 profile 装载）
+│   ├── agents/             ← 角色定义（按 profile 装载）
+│   └── docs/templates/     ← 文档模板
+├── docs/
+│   ├── specs/              ← PRD / lite-spec / intent-log
+│   ├── arch/               ← ADR
+│   └── reviews/            ← QA 审计
+├── src/                    ← Studio 生产代码
+├── tests/                  ← Studio 测试
+├── sandbox/                ← Vibe 原型工作区
+│   ├── <name>/
+│   └── archive/            ← 归档的原型
+└── production/
+    └── backlog.md
 ```
 
 ---
-*Powered by Universal Software Studio — 像经营工作室一样编写代码。*
+
+## 🔒 核心设计原则
+
+1. **协作而非自主 (Collaboration, not Autonomy)** — 五步协作法：提问 → 方案 → 决策 → 草案 → 批准
+2. **双模态并存 (Dual Mode)** — Vibe 与 Studio 共享底层安全约束，风格规则按目录分派
+3. **按需装载 (On-Demand)** — 用户不为不用的技能付上下文代价
+4. **反 AI 特有病灶** — `ai-generated-code.md` 专门约束幻觉、过度抽象、上下文丢失
+
+---
+
+## 🤝 个人定制与团队同步
+
+### 本地覆盖（不入 git）
+
+以下文件被 `.gitignore` 忽略，可自定义本地行为：
+
+- `CLAUDE.local.md` — 个人偏好、快捷指令
+- `.claude/settings.local.json` — 本地文件权限
+
+模板：`.claude/docs/*-template.*`
+
+### 团队同步（入 git）
+
+```bash
+git add .claude/ CLAUDE.md README.md .usds-mode
+git commit -m "chore: 部署 USDS v2"
+```
+
+---
+
+## 🔧 维护操作
+
+```bash
+# 检查更新
+/update
+
+# 切换模式
+/mode-switch
+
+# 卸载
+./scripts/install-usds.sh --uninstall     # macOS/Linux
+.\scripts\install-usds.ps1 -Uninstall     # Windows
+```
+
+---
+
+## 📖 更多文档
+
+- Vibe Mode 规则：`.claude/rules/vibe-mode.md`
+- AI 代码规约：`.claude/rules/ai-generated-code.md`
+- Sandbox 工作区：`sandbox/README.md`
+- 模式示例：`.usds-mode.example`
+
+---
+
+*Powered by Universal Software Studio v2 — 严肃时严肃，自由时自由。*

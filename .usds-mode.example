@@ -1,0 +1,13 @@
+# USDS 模式声明文件示例
+# 复制此文件为 .usds-mode 并按需修改
+
+mode: vibe
+created: 2026-07-06
+last_switched: 2026-07-06
+reason: 快速探索个人项目
+locked: false
+
+# 可选字段说明：
+# mode: vibe | studio | hybrid
+# locked: true 时禁止 /mode-switch，用于交付或发布锁定
+# reason: 一句话说明为何选择此模式

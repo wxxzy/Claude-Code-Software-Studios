@@ -24,12 +24,4 @@ expertise: 自动化测试、边界值分析、性能测试、回归测试
 
 ## 核心输出 (Deliverables)
 
-- `docs/reviews/TEST-REPORT-xxx.md` (测试报告)
-- `docs/reviews/RELEASE-CHECKLIST.md` (发布清单)
-- `tests/` 下的集成测试或端到端测试。
-
-## 常用工具与提示 (Tips)
-
-- **坏路径思维**: 永远思考“如果用户输入了非法数据会发生什么？”
-- **自动化优先**: 能自动化的测试绝不手动执行。
----
+- `docs/reviews/TEST-REPORT-xxx.md`, `RELEASE-CHECKLIST.md`、`tests/` 集成测试

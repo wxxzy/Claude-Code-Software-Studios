@@ -1,39 +1,40 @@
-# Universal Software Studio -- Claude Code Integration
+# Universal Software Studio — Claude Code Integration
 
-## 🛠️ 核心技能 (Slash Commands)
+**v2.0 双模态**：Vibe Mode（探索/原型）与 Studio Mode（严肃/生产）共存。
 
-这些技能定义在 `.claude/skills/` 中，可以通过斜杠命令调用：
+## 模式声明
 
-- `/start`: **智能启动引导**。由 `delivery-manager` 主导。
-- `/onboard`: **团队入职引导**。向新团队成员介绍 USDS 协作流程。
-- `/update`: **自动检查更新**。将工作室基础设施同步至 GitHub 最新版本。
-- `/discovery`: **需求发现**。将模糊想法转化为 `docs/specs/PRD.md`。
-- `/project-scan`: **项目扫描与映射**。分析已有项目的架构并识别技术债。
-- `/setup-stack`: **技术选型与初始化**。由 `technical-architect` 引导并生成项目骨架。
-- `/arch-design`: **架构设计/影响分析**。生成 `docs/arch/ADR.md`。
-- `/summarize-arch`: **架构快照与总结**。压缩 ADR 到 `docs/arch/ARCHITECTURE-STATE.md`。
-- `/sprint-kickoff`: **任务拆解**。由 `delivery-manager` 生成 `production/backlog.md`。
-- `/review`: **技术评审**。在发布前由架构师进行正式的代码审查。
-- `/gate-check`: **质量审计**。由 `qa-lead` 进行最后的发布验证。
+`.usds-mode` 文件决定当前模式，缺失时默认 `studio`。用 `/mode-switch` 初始化或切换。
 
-## 👥 代理架构 (Agent Roster)
+| mode | 主要目录 | 主导规则 |
+|---|---|---|
+| `vibe` | `sandbox/**` | `.claude/rules/vibe-mode.md` |
+| `studio` | `src/`, `docs/`, `tests/` | `.claude/rules/global-standards.md` |
+| `hybrid` | 两者共存 | 按路径分派 |
 
-- **Product Director**: 负责 `docs/specs/`。
-- **Technical Architect**: 负责 `docs/arch/`。
-- **Lead Developer**: 负责 `src/`, `tests/`。
-- **Delivery Manager**: 负责 `production/`。
-- **QA Lead**: 负责 `docs/reviews/`。
+## 协议
 
-## 📜 协作协议 (Protocols)
+- **Studio Mode**: Doc-First（先文档后代码）、Verify-First（`/gate-check` 通过才算交付）
+- **Vibe Mode**: Demo-First（15 分钟出可跑 demo）、每 3-5 轮迭代必须 `/vibe-check` 校准意图
+- **全局**: 密钥/SQL 拼接/未验证输入/未锁版本依赖 = Hard Limits（任何模式都禁止）
+- **单向依赖**: `sandbox/**` 可引用 `src/**`，反之**禁止**
 
-1. **Doc-First**: 所有功能变更必须先在 `docs/` 下有对应的设计文档。
-2. **Path Rules**:
-   - `src/**`: 遵循 `.claude/universal/rules/global-standards.md`。
-   - `tests/**`: 遵循 `.claude/universal/rules/test-conventions.md`。
-3. **Verify-First**: 只有通过 `/gate-check` 的代码才被视为可交付。
+## Path Rules
 
-## 🛠️ 技术栈 (Technology Stack)
+| 路径 | 规则文件 |
+|---|---|
+| `src/**` | `.claude/rules/global-standards.md` + `.claude/rules/backend-api.md` |
+| `tests/**` | `.claude/rules/test-conventions.md` |
+| `docs/**` | `.claude/rules/doc-standards.md` |
+| `sandbox/**` | `.claude/rules/vibe-mode.md` |
+| 全局 (AI 生成代码) | `.claude/rules/ai-generated-code.md` |
 
-- **Backend**: Python (FastAPI) / Node.js
-- **Frontend**: Next.js / React
-- **Docs**: Markdown-driven, ADR-based
+## 技能与角色
+
+- 技能定义见 `.claude/skills/`（由 harness 自动加载）
+- 角色定义见 `.claude/agents/`
+- 文档模板见 `.claude/docs/templates/`
+
+## 技术栈默认倾向
+
+Backend: Python (FastAPI) / Node.js · Frontend: Next.js / React · Docs: Markdown + ADR
