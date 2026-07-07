@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Claude Code Game Studios — Status Line
+# USDS v2 — Status Line
 # Receives JSON on stdin, outputs a single-line status.
 #
-# Segments: ctx% | model | production stage [| Epic > Feature > Task]
+# Format: ctx: X% | Model | mode[:project] [| Round N | Epic > Feature > Task]
 
 input=$(cat)
 
@@ -29,61 +29,53 @@ else
   ctx_label="ctx: --"
 fi
 
-# --- Production stage ---
-# Priority 1: Explicit stage from stage.txt
-stage_file="$cwd/production/stage.txt"
-stage=""
-if [ -f "$stage_file" ]; then
-  stage=$(head -1 "$stage_file" | tr -d '\r\n')
+# --- Mode detection (from .usds-mode) ---
+mode_file="$cwd/.usds-mode"
+mode="studio"  # default per CLAUDE.md
+if [ -f "$mode_file" ]; then
+  detected=$(grep -m1 '^mode:' "$mode_file" 2>/dev/null | sed 's/^mode: *//' | tr -d '\r\n[:space:]')
+  case "$detected" in
+    vibe|studio|hybrid) mode="$detected" ;;
+  esac
 fi
 
-# Priority 2: Auto-detect from artifacts
-if [ -z "$stage" ]; then
-  concept_file="$cwd/design/gdd/game-concept.md"
-  systems_file="$cwd/design/gdd/systems-index.md"
-  tech_prefs="$cwd/.claude/docs/technical-preferences.md"
+# --- Active project detection ---
+# Vibe: most recent sandbox/<name>/
+# Studio: from production/session-state/active.md
+project=""
 
-  has_concept=false
-  has_systems=false
-  engine_configured=false
-  src_count=0
+if [ "$mode" = "vibe" ] || [ "$mode" = "hybrid" ]; then
+  # Newest sandbox project (excluding archive)
+  if [ -d "$cwd/sandbox" ]; then
+    project=$(find "$cwd/sandbox" -mindepth 1 -maxdepth 1 -type d ! -name 'archive' -printf '%T@ %f\n' 2>/dev/null \
+      | sort -rn | head -1 | awk '{print $2}')
+  fi
+fi
 
-  [ -f "$concept_file" ] && has_concept=true
-  [ -f "$systems_file" ] && has_systems=true
+# Studio fallback: try lite-spec / PRD project name
+if [ -z "$project" ] && [ -f "$cwd/docs/specs/lite-spec.md" ]; then
+  project=$(grep -m1 '^# ' "$cwd/docs/specs/lite-spec.md" 2>/dev/null \
+    | sed 's/^# *//;s/ *Lite Spec.*//;s/^\[//;s/\]$//' | tr -d '\r\n')
+fi
 
-  # Check if engine is configured (not placeholder)
-  if [ -f "$tech_prefs" ]; then
-    engine_line=$(grep -m1 '^\*\*Engine\*\*:' "$tech_prefs" 2>/dev/null || true)
-    if [ -n "$engine_line" ] && ! echo "$engine_line" | grep -q "TO BE CONFIGURED"; then
-      engine_configured=true
+# --- Work-item breadcrumb ---
+breadcrumb=""
+
+# Vibe: show intent-log Round count
+if [ "$mode" = "vibe" ] || [ "$mode" = "hybrid" ]; then
+  intent_log="$cwd/docs/specs/intent-log.md"
+  if [ -f "$intent_log" ]; then
+    round_count=$(grep -cE '^## Round [0-9]+' "$intent_log" 2>/dev/null || echo 0)
+    if [ "$round_count" -gt 0 ] 2>/dev/null; then
+      breadcrumb=" | Round ${round_count}"
     fi
   fi
-
-  # Count source files (language-agnostic)
-  if [ -d "$cwd/src" ]; then
-    src_count=$(find "$cwd/src" -type f \( -name "*.gd" -o -name "*.cs" -o -name "*.cpp" -o -name "*.h" -o -name "*.py" -o -name "*.rs" -o -name "*.lua" -o -name "*.tscn" -o -name "*.tres" \) 2>/dev/null | wc -l | tr -d ' ')
-  fi
-
-  # Determine stage (check from most-advanced backward)
-  if [ "$src_count" -ge 10 ] 2>/dev/null; then
-    stage="Production"
-  elif [ "$engine_configured" = true ]; then
-    stage="Pre-Production"
-  elif [ "$has_systems" = true ]; then
-    stage="Technical Setup"
-  elif [ "$has_concept" = true ]; then
-    stage="Systems Design"
-  else
-    stage="Concept"
-  fi
 fi
 
-# --- Epic/Feature/Task breadcrumb (Production+ only) ---
-breadcrumb=""
-if [ "$stage" = "Production" ] || [ "$stage" = "Polish" ] || [ "$stage" = "Release" ]; then
+# Studio: parse active.md STATUS block (preserved from v1)
+if [ "$mode" = "studio" ] || [ "$mode" = "hybrid" ]; then
   state_file="$cwd/production/session-state/active.md"
   if [ -f "$state_file" ]; then
-    # Parse structured STATUS block
     in_block=false
     epic="" feature="" task=""
     while IFS= read -r line; do
@@ -93,21 +85,30 @@ if [ "$stage" = "Production" ] || [ "$stage" = "Polish" ] || [ "$stage" = "Relea
       esac
       if [ "$in_block" = true ]; then
         case "$line" in
-          Epic:*) epic=$(echo "$line" | sed 's/^Epic: *//') ;;
-          Feature:*) feature=$(echo "$line" | sed 's/^Feature: *//') ;;
-          Task:*) task=$(echo "$line" | sed 's/^Task: *//') ;;
+          Epic:*)    epic=$(echo "$line" | sed 's/^Epic: *//;s/[[:space:]]*$//') ;;
+          Feature:*) feature=$(echo "$line" | sed 's/^Feature: *//;s/[[:space:]]*$//') ;;
+          Task:*)    task=$(echo "$line" | sed 's/^Task: *//;s/[[:space:]]*$//') ;;
         esac
       fi
     done < "$state_file"
 
-    # Build breadcrumb from whatever is set
     parts=""
     [ -n "$epic" ] && parts="$epic"
     [ -n "$feature" ] && parts="${parts:+$parts > }$feature"
     [ -n "$task" ] && parts="${parts:+$parts > }$task"
-    [ -n "$parts" ] && breadcrumb=" | $parts"
+    if [ -n "$parts" ]; then
+      # Studio breadcrumb replaces (not appends to) vibe round
+      breadcrumb=" | $parts"
+    fi
   fi
 fi
 
-# --- Assemble ---
-printf "%s" "${ctx_label} | ${model} | ${stage}${breadcrumb}"
+# --- Assemble mode segment ---
+if [ -n "$project" ]; then
+  mode_label="${mode}:${project}"
+else
+  mode_label="${mode}"
+fi
+
+# --- Output ---
+printf "%s" "${ctx_label} | ${model} | ${mode_label}${breadcrumb}"

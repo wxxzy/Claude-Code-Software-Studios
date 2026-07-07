@@ -82,9 +82,16 @@ if (-not $Profile) {
 $CoreFiles = @(
     "CLAUDE.md",
     ".usds-mode.example",
+    # --- Runtime infrastructure (v2 曾漏装 — 修复) ---
+    ".claude/settings.json",
+    ".claude/statusline.sh",
+    ".claude/hooks",
+    ".claude/VERSION",
+    # --- Rules ---
     ".claude/rules/global-standards.md",
     ".claude/rules/ai-generated-code.md",
     ".claude/rules/doc-standards.md",
+    # --- Base skills ---
     ".claude/skills/start",
     ".claude/skills/onboard",
     ".claude/skills/update",
@@ -92,9 +99,11 @@ $CoreFiles = @(
     ".claude/skills/cost-report",
     ".claude/skills/debt-log",
     ".claude/skills/micro-adr",
+    # --- Base agents ---
     ".claude/agents/delivery-manager.md",
     ".claude/agents/cost-accountant.md",
     ".claude/agents/debt-auditor.md",
+    # --- Base docs & templates ---
     ".claude/docs/quick-start.md",
     ".claude/docs/directory-structure.md",
     ".claude/docs/templates/cost-ledger.md",
