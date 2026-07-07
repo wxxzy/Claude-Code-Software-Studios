@@ -25,6 +25,31 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# ---------- 检测管道模式 (irm | iex 等) ----------
+# 管道模式下 stdin 被占用，Read-Host 会静默返回空 → 导致覆盖询问全被跳过
+$IsPipedInstall = [Console]::IsInputRedirected -or -not [Environment]::UserInteractive
+
+if ($IsPipedInstall) {
+    Write-Host ""
+    Write-Host "⚠ 检测到管道/非交互式安装模式" -ForegroundColor Yellow
+    Write-Host "  Read-Host 无法接收输入，已自动启用 -Force" -ForegroundColor Yellow
+    Write-Host "  若要交互式菜单，请：irm <url> -OutFile install-usds.ps1 后本地执行" -ForegroundColor Yellow
+    Write-Host ""
+
+    # 强制启用 Force，否则每个已存在文件都会被静默跳过
+    $Force = $true
+
+    # 管道模式必须显式指定 Profile
+    if (-not $Profile) {
+        Write-Host "✗ 管道模式必须显式指定 -Profile" -ForegroundColor Red
+        Write-Host ""
+        Write-Host "示例:" -ForegroundColor White
+        Write-Host "  & ([scriptblock]::Create((irm <url>))) -Profile vibe"
+        Write-Host "  & ([scriptblock]::Create((irm <url>))) -Profile studio -DryRun"
+        exit 1
+    }
+}
+
 # ---------- 常量 ----------
 $RepoUrl = "https://github.com/wxxzy/Claude-Code-Software-Studios"
 $ManifestFile = ".usds-manifest"
@@ -237,6 +262,8 @@ try {
     if (-not $NoSamples -and (Test-Path (Join-Path $SourceRoot 'docs'))) {
         if (Test-Path 'docs') {
             Write-Warn "⚠ 用户 docs/ 已存在，跳过示范文档（用 -Force 覆盖）"
+        } elseif ($IsPipedInstall) {
+            Write-Dim "  ⊘ 管道模式跳过示范 docs/（用 -Force 或本地执行触发）"
         } else {
             $ans = Read-Host "是否安装示范 docs/ 目录？[y/N]"
             if ($ans -eq 'y' -or $ans -eq 'Y') {
@@ -249,11 +276,15 @@ try {
 
     # ---------- README 保护 ----------
     if (-not (Test-Path 'README.md') -and (Test-Path (Join-Path $SourceRoot 'README.md'))) {
-        $ans = Read-Host "当前项目没有 README.md，是否用 USDS 的入门 README？[y/N]"
-        if ($ans -eq 'y' -or $ans -eq 'Y') {
-            Copy-Item -Path (Join-Path $SourceRoot 'README.md') -Destination '.' -Force
-            $Installed += 'README.md'
-            Write-Ok "  ✓ README.md"
+        if ($IsPipedInstall) {
+            Write-Dim "  ⊘ 管道模式跳过 README.md 询问（保留空 README 状态）"
+        } else {
+            $ans = Read-Host "当前项目没有 README.md，是否用 USDS 的入门 README？[y/N]"
+            if ($ans -eq 'y' -or $ans -eq 'Y') {
+                Copy-Item -Path (Join-Path $SourceRoot 'README.md') -Destination '.' -Force
+                $Installed += 'README.md'
+                Write-Ok "  ✓ README.md"
+            }
         }
     } else {
         Write-Dim "  ⊘ 保留用户 README.md"

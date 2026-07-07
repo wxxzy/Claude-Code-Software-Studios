@@ -15,6 +15,16 @@
 
 set -euo pipefail
 
+# ---------- 检测管道模式 (curl | bash) ----------
+# 管道模式下 stdin 被下载流占用，read </dev/tty 在部分环境（CI、无 tty SSH、msys）不可用
+# 会导致所有覆盖询问静默返回空 → 每个已存在文件被跳过
+IS_PIPED=false
+if [ ! -t 0 ] && [ ! -e /dev/tty ]; then
+  IS_PIPED=true
+elif [ ! -t 0 ] && [ ! -r /dev/tty ]; then
+  IS_PIPED=true
+fi
+
 # ---------- 常量 ----------
 REPO_URL="https://github.com/wxxzy/Claude-Code-Software-Studios"
 DEFAULT_REF="master"
@@ -88,6 +98,24 @@ uninstall() {
   exit 0
 }
 $UNINSTALL && uninstall
+
+# ---------- 管道模式警告与保护 ----------
+if $IS_PIPED; then
+  echo ""
+  echo -e "${C_YELLOW}⚠ 检测到管道/非交互式安装模式${C_OFF}"
+  echo -e "${C_YELLOW}  read 无法接收输入，已自动启用 --force${C_OFF}"
+  echo -e "${C_YELLOW}  若要交互式菜单，请：curl -o install-usds.sh <url> && bash install-usds.sh${C_OFF}"
+  echo ""
+  FORCE=true
+  if [[ -z "$PROFILE" ]]; then
+    echo -e "${C_RED}✗ 管道模式必须显式指定 --profile${C_OFF}"
+    echo ""
+    echo "示例:"
+    echo "  curl -fsSL <url> | bash -s -- --profile vibe"
+    echo "  curl -fsSL <url> | bash -s -- --profile studio --dry-run"
+    exit 1
+  fi
+fi
 
 # ---------- Profile 选择 ----------
 if [[ -z "$PROFILE" ]]; then
@@ -277,6 +305,8 @@ done
 if ! $NO_SAMPLES && [[ -d "$SOURCE_ROOT/docs" ]]; then
   if [[ -d "docs" ]]; then
     echo -e "${C_YELLOW}⚠ 用户 docs/ 已存在，跳过示范文档（用 --force 覆盖）${C_OFF}"
+  elif $IS_PIPED; then
+    echo -e "${C_GRAY}  ⊘ 管道模式跳过示范 docs/（用 --force 或本地执行触发）${C_OFF}"
   else
     read -rp "是否安装示范 docs/ 目录？[y/N] " ans </dev/tty
     if [[ "$ans" == "y" || "$ans" == "Y" ]]; then
@@ -289,11 +319,15 @@ fi
 
 # ---------- 保护性检查：README ----------
 if [[ ! -f "README.md" && -f "$SOURCE_ROOT/README.md" ]]; then
-  read -rp "当前项目没有 README.md，是否用 USDS 的入门 README？[y/N] " ans </dev/tty
-  if [[ "$ans" == "y" || "$ans" == "Y" ]]; then
-    cp "$SOURCE_ROOT/README.md" .
-    INSTALLED+=("README.md")
-    echo -e "${C_GREEN}  ✓ README.md${C_OFF}"
+  if $IS_PIPED; then
+    echo -e "${C_GRAY}  ⊘ 管道模式跳过 README.md 询问（保留用户空 README 状态）${C_OFF}"
+  else
+    read -rp "当前项目没有 README.md，是否用 USDS 的入门 README？[y/N] " ans </dev/tty
+    if [[ "$ans" == "y" || "$ans" == "Y" ]]; then
+      cp "$SOURCE_ROOT/README.md" .
+      INSTALLED+=("README.md")
+      echo -e "${C_GREEN}  ✓ README.md${C_OFF}"
+    fi
   fi
 else
   echo -e "${C_GRAY}  ⊘ 保留用户 README.md${C_OFF}"
