@@ -9,12 +9,11 @@
 
 INPUT=$(cat)
 
-# 解析写入的文件路径
-if command -v jq >/dev/null 2>&1; then
-    FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // .tool_input.path // empty')
-else
-    FILE_PATH=$(echo "$INPUT" | grep -oE '"file_path"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/"file_path"[[:space:]]*:[[:space:]]*"//;s/"$//')
-fi
+# 解析写入的文件路径（共享分层助手 jq -> python -> regex，见 ADR-001）
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/json.sh
+source "$SCRIPT_DIR/lib/json.sh"
+FILE_PATH=$(usds_json_str "$INPUT" .tool_input.file_path .tool_input.path)
 
 [ -z "$FILE_PATH" ] && exit 0
 [ ! -f "$FILE_PATH" ] && exit 0

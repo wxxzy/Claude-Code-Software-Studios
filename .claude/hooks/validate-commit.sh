@@ -8,12 +8,11 @@
 
 INPUT=$(cat)
 
-# Parse command -- use jq if available, fall back to grep
-if command -v jq >/dev/null 2>&1; then
-    COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
-else
-    COMMAND=$(echo "$INPUT" | grep -oE '"command"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/"command"[[:space:]]*:[[:space:]]*"//;s/"$//')
-fi
+# Parse command via shared tiered helper (jq -> python -> regex), see ADR-001
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/json.sh
+source "$SCRIPT_DIR/lib/json.sh"
+COMMAND=$(usds_json_str "$INPUT" .tool_input.command)
 
 # Only process git commit commands
 if ! echo "$COMMAND" | grep -qE '^git[[:space:]]+commit'; then
@@ -27,29 +26,32 @@ if [ -z "$STAGED" ]; then
 fi
 
 WARNINGS=""
+BLOCKERS=""
 
-# Check PRD documents for required sections (per doc-standards.md)
-PRD_FILES=$(echo "$STAGED" | grep -E '^docs/specs/.*\.md$')
+# Check PRD documents for required sections (per doc-standards.md, enforced blocking per ADR-001/D2)
+# Scope: PRD*.md only — other docs/specs/*.md files (research notes, etc.) are not gated.
+PRD_FILES=$(echo "$STAGED" | grep -E '^docs/specs/PRD[^/]*\.md$')
 if [ -n "$PRD_FILES" ]; then
     while IFS= read -r file; do
-        if [[ "$file" == *.md ]] && [ -f "$file" ]; then
+        if [ -f "$file" ]; then
             for section in "业务目标" "用户故事" "验收标准"; do
                 if ! grep -qi "$section" "$file"; then
-                    WARNINGS="$WARNINGS\nPRD: $file missing required section: $section"
+                    BLOCKERS="$BLOCKERS\nPRD: $file missing required section: $section"
                 fi
             done
         fi
     done <<< "$PRD_FILES"
 fi
 
-# Check ADR documents for required sections (per doc-standards.md)
-ADR_FILES=$(echo "$STAGED" | grep -E '^docs/arch/.*\.md$')
+# Check ADR documents for required sections (per doc-standards.md, enforced blocking per ADR-001/D2)
+# Scope: ADR*.md only — SYSTEM-MAP.md / TECH-DEBT.md and other docs/arch/*.md are not gated.
+ADR_FILES=$(echo "$STAGED" | grep -E '^docs/arch/ADR[^/]*\.md$')
 if [ -n "$ADR_FILES" ]; then
     while IFS= read -r file; do
-        if [[ "$file" == *.md ]] && [ -f "$file" ]; then
+        if [ -f "$file" ]; then
             for section in "背景" "决策" "权衡" "替代方案"; do
                 if ! grep -qi "$section" "$file"; then
-                    WARNINGS="$WARNINGS\nADR: $file missing required section: $section"
+                    BLOCKERS="$BLOCKERS\nADR: $file missing required section: $section"
                 fi
             done
         fi
@@ -97,6 +99,13 @@ fi
 # Print warnings (non-blocking) and allow commit
 if [ -n "$WARNINGS" ]; then
     echo -e "=== Commit Validation Warnings ===$WARNINGS\n================================" >&2
+fi
+
+# Block on missing mandatory PRD/ADR sections (ADR-001/D2: Doc-First is enforced, not advisory)
+if [ -n "$BLOCKERS" ]; then
+    echo -e "=== BLOCKED: Mandatory Doc Sections Missing ===$BLOCKERS\n===============================================" >&2
+    echo "Per doc-standards.md these sections are mandatory. Fix the document, or rename the file if it is not a PRD/ADR." >&2
+    exit 2
 fi
 
 exit 0

@@ -228,6 +228,15 @@ case "$PROFILE" in
   full)   FILES_TO_INSTALL+=("${VIBE_FILES[@]}" "${STUDIO_FILES[@]}") ;;
 esac
 
+# 组装预创建目录清单（TD-007：消除 detect-gaps.sh 的虚假警告）
+# 不写入 manifest —— 卸载时不得删除可能已含用户内容的工程目录
+DIRS_TO_PRECREATE=("production/session-state" "production/session-logs")
+case "$PROFILE" in
+  vibe)   DIRS_TO_PRECREATE+=("sandbox") ;;
+  studio) DIRS_TO_PRECREATE+=("docs/specs" "docs/arch" "docs/reviews") ;;
+  full)   DIRS_TO_PRECREATE+=("sandbox" "docs/specs" "docs/arch" "docs/reviews") ;;
+esac
+
 # ---------- 预览 ----------
 echo ""
 echo -e "${C_BOLD}安装计划:${C_OFF}"
@@ -241,6 +250,9 @@ echo ""
 if $DRY_RUN; then
   echo -e "${C_YELLOW}[DRY-RUN] 以下文件将被安装:${C_OFF}"
   printf '  %s\n' "${FILES_TO_INSTALL[@]}"
+  echo ""
+  echo -e "${C_YELLOW}[DRY-RUN] 以下目录将被预创建（已存在则跳过）:${C_OFF}"
+  printf '  %s/\n' "${DIRS_TO_PRECREATE[@]}"
   echo ""
   echo -e "${C_GRAY}未做任何修改。移除 --dry-run 后正式执行。${C_OFF}"
   exit 0
@@ -299,6 +311,25 @@ echo ""
 echo -e "${C_BOLD}开始安装...${C_OFF}"
 for item in "${FILES_TO_INSTALL[@]}"; do
   install_item "$item"
+done
+
+# ---------- 目录预创建 (TD-007) ----------
+# 已存在（无论是否为空）一律跳过；空目录补 .gitkeep 供 git 追踪
+precreate_dir() {
+  local d="$1"
+  if [ -e "$d" ]; then
+    echo -e "${C_GRAY}  ⊘ 目录已存在，跳过: $d/${C_OFF}"
+  else
+    mkdir -p "$d"
+    touch "$d/.gitkeep"
+    echo -e "${C_GREEN}  ✓ $d/ (+.gitkeep)${C_OFF}"
+  fi
+}
+
+echo ""
+echo -e "${C_BOLD}目录预创建:${C_OFF}"
+for d in "${DIRS_TO_PRECREATE[@]}"; do
+  precreate_dir "$d"
 done
 
 # ---------- 示范 docs (可选) ----------

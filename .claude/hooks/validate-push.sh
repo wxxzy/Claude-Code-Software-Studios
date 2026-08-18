@@ -8,12 +8,11 @@
 
 INPUT=$(cat)
 
-# Parse command -- use jq if available, fall back to grep
-if command -v jq >/dev/null 2>&1; then
-    COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
-else
-    COMMAND=$(echo "$INPUT" | grep -oE '"command"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/"command"[[:space:]]*:[[:space:]]*"//;s/"$//')
-fi
+# Parse command via shared tiered helper (jq -> python -> regex), see ADR-001
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/json.sh
+source "$SCRIPT_DIR/lib/json.sh"
+COMMAND=$(usds_json_str "$INPUT" .tool_input.command)
 
 # Only process git push commands
 if ! echo "$COMMAND" | grep -qE '^git[[:space:]]+push'; then

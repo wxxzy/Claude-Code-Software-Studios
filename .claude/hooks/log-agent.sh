@@ -7,13 +7,12 @@
 
 INPUT=$(cat)
 
-# Parse agent name -- use jq if available, fall back to grep
-if command -v jq >/dev/null 2>&1; then
-    AGENT_NAME=$(echo "$INPUT" | jq -r '.agent_name // "unknown"' 2>/dev/null)
-else
-    AGENT_NAME=$(echo "$INPUT" | grep -oE '"agent_name"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/"agent_name"[[:space:]]*:[[:space:]]*"//;s/"$//')
-    [ -z "$AGENT_NAME" ] && AGENT_NAME="unknown"
-fi
+# Parse agent name via shared tiered helper (jq -> python -> regex), see ADR-001
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/json.sh
+source "$SCRIPT_DIR/lib/json.sh"
+AGENT_NAME=$(usds_json_str "$INPUT" .agent_name)
+AGENT_NAME="${AGENT_NAME:-unknown}"
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 SESSION_LOG_DIR="production/session-logs"

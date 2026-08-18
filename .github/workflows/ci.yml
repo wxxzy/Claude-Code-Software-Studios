@@ -1,0 +1,83 @@
+# USDS Framework CI — see docs/arch/ADR-001-framework-self-hardening.md (D3)
+# Gates: bats regression suite on ubuntu (blocking).
+# Reports: shellcheck (non-blocking first iteration), installer dry-runs, windows git-bash smoke.
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  bats:
+    name: Bats regression suite (ubuntu, blocking)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install bats
+        run: npm install -g bats
+
+      - name: Run hook regression tests
+        run: bats tests/hooks/*.bats
+
+  shellcheck:
+    name: Shellcheck (report only)
+    runs-on: ubuntu-latest
+    continue-on-error: true # first iteration: observe before promoting to a gate
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run shellcheck
+        run: |
+          sudo apt-get update && sudo apt-get install -y shellcheck
+          shellcheck .claude/hooks/*.sh .claude/hooks/lib/*.sh .claude/statusline.sh scripts/install-usds.sh || true
+          # || true keeps per-file errors visible in log without failing the job
+
+  installer-dryrun:
+    name: Installer dry-run (ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: studio profile
+        run: bash scripts/install-usds.sh --profile studio --dry-run
+      - name: full profile
+        run: bash scripts/install-usds.sh --profile full --dry-run
+      - name: vibe profile
+        run: bash scripts/install-usds.sh --profile vibe --dry-run
+      - name: minimal profile
+        run: bash scripts/install-usds.sh --profile minimal --dry-run
+
+  windows-smoke:
+    name: Windows smoke (installer + git-bash hooks)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer dry-run
+        shell: pwsh
+        run: .\scripts\install-usds.ps1 -Profile studio -DryRun
+
+      - name: Hook smoke via git-bash (validate-push)
+        shell: pwsh
+        run: |
+          $bash = "C:\Program Files\Git\bin\bash.exe"
+          $env:PATH = "C:\Program Files\Git\bin;$env:PATH"
+          $json = '{"tool_input":{"command":"git push origin master"}}'
+          $json | & $bash .claude/hooks/validate-push.sh 2>&1 | Write-Host
+          if ($LASTEXITCODE -ne 0) { throw "validate-push smoke failed: $LASTEXITCODE" }
+
+      - name: Hook smoke via git-bash (validate-assets)
+        shell: pwsh
+        run: |
+          $bash = "C:\Program Files\Git\bin\bash.exe"
+          $env:PATH = "C:\Program Files\Git\bin;$env:PATH"
+          $tmp = Join-Path $env:TEMP "usds-smoke-$([guid]::NewGuid().ToString('N')).txt"
+          Set-Content -Path $tmp -Value 'x = 1'
+          $json = '{"tool_name":"Write","tool_input":{"file_path":"' + ($tmp -replace '\\','/') + '","content":"x"}}'
+          $json | & $bash .claude/hooks/validate-assets.sh 2>&1 | Write-Host
+          if ($LASTEXITCODE -ne 0) { throw "validate-assets smoke failed: $LASTEXITCODE" }
+          Remove-Item $tmp -Force

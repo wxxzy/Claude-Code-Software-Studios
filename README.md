@@ -213,19 +213,31 @@ irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/
 │   ├── rules/              ← 规则文件（按 profile 装载）
 │   ├── skills/             ← 技能定义（按 profile 装载）
 │   ├── agents/             ← 角色定义（按 profile 装载）
+│   ├── hooks/              ← 生命周期守卫（含 lib/ 共享库）
 │   └── docs/templates/     ← 文档模板
 ├── docs/
 │   ├── specs/              ← PRD / lite-spec / intent-log
-│   ├── arch/               ← ADR
+│   ├── arch/               ← ADR / SYSTEM-MAP / TECH-DEBT
 │   └── reviews/            ← QA 审计
 ├── src/                    ← Studio 生产代码
-├── tests/                  ← Studio 测试
+├── tests/                  ← Studio 测试（仓库自身：框架 bats 套件）
+├── .github/workflows/      ← CI（bats 门禁 + 安装器冒烟）
 ├── sandbox/                ← Vibe 原型工作区
 │   ├── <name>/
 │   └── archive/            ← 归档的原型
 └── production/
     └── backlog.md
 ```
+
+### 框架自身的测试与 CI
+
+本仓库的 hooks 与安装脚本有回归保障（详见 `docs/arch/ADR-001`）：
+
+```bash
+npm i -g bats && bats tests/hooks/*.bats   # 本地运行 28 个回归用例
+```
+
+CI（`.github/workflows/ci.yml`）：ubuntu bats 阻断门 + shellcheck（仅报告）+ 四种 profile 安装 dry-run + Windows 冒烟。
 
 ---
 

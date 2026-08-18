@@ -5,6 +5,7 @@
 ## 1. 强制模板 (Mandatory Templates)
 - **PRD**: 必须包含 业务目标、用户故事 和 验收标准 章节。
 - **ADR**: 必须包含 背景、决策、权衡 和 替代方案 章节。
+- **强制即阻断**: 上述章节由 `validate-commit.sh` 在 `git commit` 时**阻断式**校验（缺失则 `exit 2` 拒绝提交）。校验作用域按文件名匹配：`docs/specs/PRD*.md` 与 `docs/arch/ADR*.md`；其他命名的文档（如 SYSTEM-MAP、研究笔记）不受此门控。见 `docs/arch/ADR-001`。
 
 ## 2. 状态管理 (Status)
 - 所有文档顶端必须标明当前状态：`Draft` (草稿)、`Proposed` (提议)、`Approved` (已批准)、`Deprecated` (已废弃)。

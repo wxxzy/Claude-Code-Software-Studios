@@ -1,4 +1,4 @@
-# ============================================================================
+﻿# ============================================================================
 # USDS (Universal Software Studio) v2 安装脚本 - Windows PowerShell
 # 仓库: https://github.com/wxxzy/Claude-Code-Software-Studios
 #
@@ -186,6 +186,15 @@ switch ($Profile) {
     'full'   { $FilesToInstall += $VibeFiles; $FilesToInstall += $StudioFiles }
 }
 
+# 预创建目录清单（TD-007：消除 detect-gaps.sh 的虚假警告）
+# 不写入 manifest —— 卸载时不得删除可能已含用户内容的工程目录
+$DirsToPrecreate = @("production/session-state", "production/session-logs")
+switch ($Profile) {
+    'vibe'   { $DirsToPrecreate += "sandbox" }
+    'studio' { $DirsToPrecreate += @("docs/specs", "docs/arch", "docs/reviews") }
+    'full'   { $DirsToPrecreate += @("sandbox", "docs/specs", "docs/arch", "docs/reviews") }
+}
+
 # ---------- 预览 ----------
 Write-Host ""
 Write-Host "安装计划:" -ForegroundColor White
@@ -199,6 +208,9 @@ Write-Host ""
 if ($DryRun) {
     Write-Warn "[DRY-RUN] 以下文件将被安装:"
     $FilesToInstall | ForEach-Object { Write-Host "  $_" }
+    Write-Host ""
+    Write-Warn "[DRY-RUN] 以下目录将被预创建（已存在则跳过）:"
+    $DirsToPrecreate | ForEach-Object { Write-Host "  $_/" }
     Write-Host ""
     Write-Dim "未做任何修改。移除 -DryRun 后正式执行。"
     exit 0
@@ -257,6 +269,20 @@ try {
     Write-Host ""
     Write-Host "开始安装..." -ForegroundColor White
     foreach ($item in $FilesToInstall) { Install-Item-Local -Rel $item }
+
+    # ---------- 目录预创建 (TD-007) ----------
+    # 已存在（无论是否为空）一律跳过；新建目录补 .gitkeep 供 git 追踪
+    Write-Host ""
+    Write-Host "目录预创建:" -ForegroundColor White
+    foreach ($d in $DirsToPrecreate) {
+        if (Test-Path $d) {
+            Write-Dim "  ⊘ 目录已存在，跳过: $d/"
+        } else {
+            New-Item -ItemType Directory -Path $d -Force | Out-Null
+            New-Item -ItemType File -Path (Join-Path $d '.gitkeep') -Force | Out-Null
+            Write-Ok "  ✓ $d/ (+.gitkeep)"
+        }
+    }
 
     # ---------- 示范 docs ----------
     if (-not $NoSamples -and (Test-Path (Join-Path $SourceRoot 'docs'))) {
