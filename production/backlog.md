@@ -65,6 +65,7 @@
 - [x] **T-014**: `session-start.sh` 区分超时与网络错误，输出 `(offline: version check skipped)`
 - [x] **T-017**: `doc-standards.md` 明确强制章节由 hook 阻断式校验（含文件名作用域说明）
 - [x] **T-020** *(新增)*: `install-usds.ps1` 转 UTF-8 with BOM，修复 Windows PowerShell 5.1 解析失败（TD-008）
+- [x] **T-021** *(新增)*: 补回全部 `.sh` 脚本的 git 可执行位（Windows 提交丢失 +x 导致 ubuntu CI 直接执行 hooks 报 Permission denied；detect-gaps bats 用例直接执行 hook 文件，此后持续守护该位）
 
 ---
 
