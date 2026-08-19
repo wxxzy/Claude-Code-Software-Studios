@@ -195,6 +195,15 @@ switch ($Profile) {
     'full'   { $DirsToPrecreate += @("sandbox", "docs/specs", "docs/arch", "docs/reviews") }
 }
 
+# v2.0 → v2.1 重命名残留清理清单（ADR-002：升级时旧命令目录若存在则删除）
+# 这些均为 USDS 保留名，绝不涉及用户自装技能
+$RenamedAwaySkills = @(
+    "start", "onboard", "mode-switch", "update", "cost-report", "debt-log", "micro-adr",
+    "prototype", "taste-review", "branch-vibe", "explain-back", "graduate",
+    "discovery", "project-scan", "setup-stack", "arch-design", "summarize-arch",
+    "sprint-kickoff", "review", "gate-check"
+)
+
 # ---------- 预览 ----------
 Write-Host ""
 Write-Host "安装计划:" -ForegroundColor White
@@ -212,6 +221,12 @@ if ($DryRun) {
     Write-Warn "[DRY-RUN] 以下目录将被预创建（已存在则跳过）:"
     $DirsToPrecreate | ForEach-Object { Write-Host "  $_/" }
     Write-Host ""
+    $StaleFound = $RenamedAwaySkills | Where-Object { Test-Path ".claude/skills/$_" }
+    if ($StaleFound) {
+        Write-Warn "[DRY-RUN] 检测到 v2.0 旧命令目录，将清理:"
+        $StaleFound | ForEach-Object { Write-Host "  .claude/skills/$_/" }
+        Write-Host ""
+    }
     Write-Dim "未做任何修改。移除 -DryRun 后正式执行。"
     exit 0
 }
@@ -269,6 +284,20 @@ try {
     Write-Host ""
     Write-Host "开始安装..." -ForegroundColor White
     foreach ($item in $FilesToInstall) { Install-Item-Local -Rel $item }
+
+    # ---------- v2.0 重命名残留清理 (ADR-002) ----------
+    # 升级路径：删除已被 v2.1 前缀化取代的旧命令目录，避免斜杠菜单新旧并存
+    $StaleRemoved = 0
+    foreach ($old in $RenamedAwaySkills) {
+        if (Test-Path ".claude/skills/$old") {
+            Remove-Item -Path ".claude/skills/$old" -Recurse -Force
+            $StaleRemoved++
+            Write-Warn "  🧹 已清理 v2.0 旧命令目录: .claude/skills/$old/"
+        }
+    }
+    if ($StaleRemoved -gt 0) {
+        Write-Dim "  （共 $StaleRemoved 个，详见 CLAUDE.md 新旧对照表）"
+    }
 
     # ---------- 目录预创建 (TD-007) ----------
     # 已存在（无论是否为空）一律跳过；新建目录补 .gitkeep 供 git 追踪

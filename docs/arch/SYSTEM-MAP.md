@@ -10,7 +10,7 @@
 
 Universal Software Studio (USDS) 是一个基于 Claude Code 的**双模态**通用软件开发工作室框架。本仓库本身**不是**一个应用程序，而是一套部署在任意软件项目根目录中的 **AI 协作基础设施**，通过标准化代理角色、斜杠命令技能、规则文件与生命周期 Hooks 来约束 Claude Code 的行为，实现人机协作的工程规范化。
 
-- **版本**: 2.0.0 (`.claude/VERSION`)
+- **版本**: 2.1.0 (`.claude/VERSION`)
 - **仓库类型**: 框架 / 工作室基础设施 (非应用项目)
 - **入口文件**: `CLAUDE.md` (Claude Code 读取的主配置) + `.usds-mode` (模式声明，缺失默认 `studio`)
 - **安装方式**: 分层安装脚本 (`scripts/install-usds.ps1` / `install-usds.sh`)，支持 `minimal / vibe / studio / full` 四种 profile、`--dry-run` 预演、`.usds-manifest` 卸载
@@ -32,9 +32,8 @@ Universal Software Studio (USDS) 是一个基于 Claude Code 的**双模态**通
 ```
 Claude-Code-Software-Studios/
 ├── CLAUDE.md                    # [入口] Claude 主配置：模式声明、路径规则分派
-├── UNIVERSAL-STUDIO.md          # 主架构文档（代理体系概览）
 ├── .claude/
-│   ├── VERSION                  # 版本标识 (2.0.0)，用于自动更新检测
+│   ├── VERSION                  # 版本标识 (2.1.0)，用于自动更新检测
 │   ├── settings.json            # [核心] Claude Code 运行时权限与 Hook 注册
 │   ├── agents/                  # [模块1] 角色定义层 — 15 个专家代理提示词
 │   ├── skills/                  # [模块2] 技能执行层 — 22 个斜杠命令流程

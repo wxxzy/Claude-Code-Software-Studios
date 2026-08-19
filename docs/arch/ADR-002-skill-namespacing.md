@@ -53,5 +53,12 @@ USDS v2 的 22 个技能安装后（尤其 `full`/`hybrid` profile，或用户�
 ## 5. 实施指南 (Implementation)
 
 - 重命名：`git mv .claude/skills/<old> .claude/skills/<new>`，frontmatter `name:` 同步改为目录名
-- 引用同步面：`CLAUDE.md`、`README.md`、`UNIVERSAL-STUDIO.md`、skills 互引、`.claude/agents/*.md`、`.claude/docs/*.md`、`scripts/install-usds.{sh,ps1}` 文件清单、`docs/arch/SYSTEM-MAP.md`、`production/backlog.md`
+- 引用同步面：`CLAUDE.md`、`README.md`、skills 互引、`.claude/agents/*.md`、`.claude/docs/*.md`、`scripts/install-usds.{sh,ps1}` 文件清单、`docs/arch/SYSTEM-MAP.md`、`production/backlog.md`
 - 校验：安装器 `--dry-run`（清单与目录名一致，防"源不存在跳过"静默漏装）、bats 套件、自举提交过 `validate-commit.sh` 门控、CI 全绿
+
+### 升级迁移（v2.0 → v2.1）
+
+安装器只增不删，旧项目升级后 20 个 v2.0 旧命令目录会残留，导致斜杠菜单新旧命令并存（42 条）。
+修复：双安装器内置 `RENAMED_AWAY_SKILLS` 清单（即本文 D1 的 20 个旧名），安装新文件后存在即删——
+均为 USDS 保留名，绝不涉及用户自装技能；`--dry-run` 会预览将清理的目录；`/usds-update` 技能
+同步注明该行为。回归保障：bats 用例校验新旧名单一致性与"仓库内不存在旧名技能目录"。

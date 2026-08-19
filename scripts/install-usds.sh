@@ -237,6 +237,15 @@ case "$PROFILE" in
   full)   DIRS_TO_PRECREATE+=("sandbox" "docs/specs" "docs/arch" "docs/reviews") ;;
 esac
 
+# v2.0 → v2.1 重命名残留清理清单（ADR-002：升级时旧命令目录若存在则删除）
+# 这些均为 USDS 保留名，绝不涉及用户自装技能
+RENAMED_AWAY_SKILLS=(
+  "start" "onboard" "mode-switch" "update" "cost-report" "debt-log" "micro-adr"
+  "prototype" "taste-review" "branch-vibe" "explain-back" "graduate"
+  "discovery" "project-scan" "setup-stack" "arch-design" "summarize-arch"
+  "sprint-kickoff" "review" "gate-check"
+)
+
 # ---------- 预览 ----------
 echo ""
 echo -e "${C_BOLD}安装计划:${C_OFF}"
@@ -254,6 +263,15 @@ if $DRY_RUN; then
   echo -e "${C_YELLOW}[DRY-RUN] 以下目录将被预创建（已存在则跳过）:${C_OFF}"
   printf '  %s/\n' "${DIRS_TO_PRECREATE[@]}"
   echo ""
+  STALE_FOUND=0
+  for old in "${RENAMED_AWAY_SKILLS[@]}"; do
+    if [ -d ".claude/skills/$old" ]; then
+      [ "$STALE_FOUND" -eq 0 ] && echo -e "${C_YELLOW}[DRY-RUN] 检测到 v2.0 旧命令目录，将清理:${C_OFF}"
+      echo -e "  .claude/skills/$old/"
+      STALE_FOUND=1
+    fi
+  done
+  [ "$STALE_FOUND" -eq 1 ] && echo ""
   echo -e "${C_GRAY}未做任何修改。移除 --dry-run 后正式执行。${C_OFF}"
   exit 0
 fi
@@ -312,6 +330,18 @@ echo -e "${C_BOLD}开始安装...${C_OFF}"
 for item in "${FILES_TO_INSTALL[@]}"; do
   install_item "$item"
 done
+
+# ---------- v2.0 重命名残留清理 (ADR-002) ----------
+# 升级路径：删除已被 v2.1 前缀化取代的旧命令目录，避免斜杠菜单新旧并存
+STALE_REMOVED=0
+for old in "${RENAMED_AWAY_SKILLS[@]}"; do
+  if [ -d ".claude/skills/$old" ]; then
+    rm -rf ".claude/skills/$old"
+    STALE_REMOVED=$((STALE_REMOVED + 1))
+    echo -e "${C_YELLOW}  🧹 已清理 v2.0 旧命令目录: .claude/skills/$old/${C_OFF}"
+  fi
+done
+[ "$STALE_REMOVED" -gt 0 ] && echo -e "${C_GRAY}  （共 $STALE_REMOVED 个，详见 CLAUDE.md 新旧对照表）${C_OFF}"
 
 # ---------- 目录预创建 (TD-007) ----------
 # 已存在（无论是否为空）一律跳过；空目录补 .gitkeep 供 git 追踪

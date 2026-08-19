@@ -25,7 +25,15 @@ agent: delivery-manager
       `irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.ps1 | iex`
     - 在 macOS/Linux 上，它会提示用户运行：
       `curl -fsSL https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.sh | bash`
+    - 管道模式需显式传参：加 `-s -- --profile <名> --force`（sh）或用 scriptblock 包装传 `-Profile <名> -Force`（ps1）
 5.  **完成**: 提示用户重启会话以加载新技能。
+
+## 升级迁移说明
+
+安装器会**自动清理重命名残留**：从 v2.0 升级到 v2.1 时，已被前缀化取代的旧命令目录
+（`start`、`review`、`discovery` 等 20 个，见 `docs/arch/ADR-002`）会在安装新文件后删除，
+避免斜杠菜单新旧命令并存。该清理只针对 USDS 保留名，不影响用户自装技能。
+新旧的完整对照表在 `CLAUDE.md` 的 "v2.1 命令重命名对照" 一节。
 
 ---
 
