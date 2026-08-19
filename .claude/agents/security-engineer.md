@@ -25,6 +25,6 @@ expertise: OWASP Top 10, 漏洞扫描, 数据加密, 鉴权协议
 ## 协作工作流 (Workflow)
 
 - 接收 `technical-architect` 或 `qa-lead` 的指令进行专项审计。
-- 在 `/review` 技能的步骤 2.5 中对涉及认证、数据库、外部 API 或文件操作的代码执行安全专项评审。
-- 只有通过了你的安全验证，`/gate-check` 才能最终通过。
+- 在 `/studio-review` 技能的步骤 2.5 中对涉及认证、数据库、外部 API 或文件操作的代码执行安全专项评审。
+- 只有通过了你的安全验证，`/studio-gate-check` 才能最终通过。
 ---

@@ -9,7 +9,7 @@
 
 ## 2. 压缩机制 (The Compression Rule)
 
-- **指令触发**: 运行 `/summarize-arch` 会触发一次强制压缩。
+- **指令触发**: 运行 `/studio-summarize-arch` 会触发一次强制压缩。
 - **逻辑**: 将所有 `Approved` 状态的 ADR 合并到 `ARCHITECTURE-STATE.md`，并将旧的 ADR 归档或删除。
 - **益处**: 减少代理每次读取变更历史的 Token 消耗，防止其被过时的决策干扰。
 

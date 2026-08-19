@@ -3,8 +3,8 @@
 本项目的所有技术决策必须遵循以下偏好。这些偏好由 `technical-architect` 维护，任何变更需经过 ADR 评审。
 
 ## 1. 语言与框架
-- **后端**: [待定 - 通过 /setup-stack 初始化]
-- **前端**: [待定 - 通过 /setup-stack 初始化]
+- **后端**: [待定 - 通过 /studio-setup-stack 初始化]
+- **前端**: [待定 - 通过 /studio-setup-stack 初始化]
 - **测试**: 优先使用项目原生测试框架 (如 pytest, jest)。
 
 ## 2. 代码风格

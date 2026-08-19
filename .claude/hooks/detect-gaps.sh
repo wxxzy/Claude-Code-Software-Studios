@@ -10,7 +10,7 @@ if [ -d "src" ]; then
     if [ "$CODE_COUNT" -gt 20 ]; then
         PRD_COUNT=$(find docs/specs -name "PRD-*.md" 2>/dev/null | wc -l | tr -d ' ')
         if [ "$PRD_COUNT" -lt 1 ]; then
-            GAPS="$GAPS no-prd(/discovery)"
+            GAPS="$GAPS no-prd(/studio-discovery)"
         fi
     fi
 fi
@@ -19,18 +19,18 @@ fi
 if [ -d "src/core" ] || [ -d "src/api" ]; then
     ADR_COUNT=$(find docs/arch -name "ADR-*.md" 2>/dev/null | wc -l | tr -d ' ')
     if [ "$ADR_COUNT" -lt 1 ]; then
-        GAPS="$GAPS no-adr(/arch-design)"
+        GAPS="$GAPS no-adr(/studio-arch-design)"
     fi
 fi
 
 # Check 3: 无 backlog
 if [ ! -f "production/backlog.md" ]; then
-    GAPS="$GAPS no-backlog(/sprint-kickoff)"
+    GAPS="$GAPS no-backlog(/studio-sprint-kickoff)"
 fi
 
 # Check 4: 无技术偏好配置
 if [ ! -f "docs/arch/TECHNICAL-PREFERENCES.md" ]; then
-    GAPS="$GAPS no-tech-prefs(/setup-stack)"
+    GAPS="$GAPS no-tech-prefs(/studio-setup-stack)"
 fi
 
 # 有缺口才输出，无缺口静默

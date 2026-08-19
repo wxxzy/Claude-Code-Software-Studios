@@ -1,7 +1,7 @@
 # Debt Ledger — <项目名>
 
 <!-- USDS 技术债账本 -->
-<!-- 由 /debt-log 维护 -->
+<!-- 由 /usds-debt-log 维护 -->
 
 **项目名**: <name>
 **上次更新**: <YYYY-MM-DD>
@@ -56,7 +56,7 @@
 - 还清日期: <YYYY-MM-DD>
 - 债龄: <n> 天
 - 还款方式: <PR/commit/描述>
-- 触发: <手动 / /review / /gate-check / /graduate>
+- 触发: <手动 / /studio-review / /studio-gate-check / /vibe-graduate>
 
 ---
 

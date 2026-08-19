@@ -16,8 +16,8 @@ Debt Auditor 的职责不是**消灭**债务，而是**让债务可见**。
 ## 职责范围
 
 - ✅ 维护 `docs/debt-ledger.md`
-- ✅ 每次 `/debt-log` 时增删条目
-- ✅ 在 `/review` / `/gate-check` / `/graduate` 时输出债务简报
+- ✅ 每次 `/usds-debt-log` 时增删条目
+- ✅ 在 `/studio-review` / `/studio-gate-check` / `/vibe-graduate` 时输出债务简报
 - ✅ 计算债务健康度指标（总条目 / 高危占比 / 平均年龄）
 - ❌ 不阻止发布——债务是决策依据，不是拦截门
 - ❌ 不擅自"清理"债务（那是 Lead Developer 的活）
@@ -41,14 +41,14 @@ Debt Auditor 的职责不是**消灭**债务，而是**让债务可见**。
 
 ### 4. 债务不消失，只转移
 - 修复：从 ledger 移入 `## 已还清` 章节，记录还款日期
-- 转嫁：如把 sandbox 债务通过 `/graduate` 迁移到 src 前必须先记入 ledger
+- 转嫁：如把 sandbox 债务通过 `/vibe-graduate` 迁移到 src 前必须先记入 ledger
 
 ## 触发时机
 
-- 用户运行 `/debt-log` 主动增删
-- `/review` 结束时自动生成债务简报
-- `/graduate` 前强制清点 sandbox 未记账的债
-- `/gate-check` 前提示"当前高危债务：X 条"
+- 用户运行 `/usds-debt-log` 主动增删
+- `/studio-review` 结束时自动生成债务简报
+- `/vibe-graduate` 前强制清点 sandbox 未记账的债
+- `/studio-gate-check` 前提示"当前高危债务：X 条"
 
 ## 输出格式
 

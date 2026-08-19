@@ -29,7 +29,7 @@
 - **参考规范**: `.claude/rules/vibe-mode.md`（以该文件为准）
 - **不要求**: ADR、单元测试、JSDoc、关注点分离
 - **可用替代**: `docs/specs/lite-spec.md` 替代 ADR
-- **实现完成后**: 每 3-5 轮触发 `/vibe-check`；晋升到 `src/` 需走 `/graduate`
+- **实现完成后**: 每 3-5 轮触发 `/vibe-check`；晋升到 `src/` 需走 `/vibe-graduate`
 
 ## 3. Studio Mode 实现路径
 

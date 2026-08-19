@@ -30,7 +30,7 @@
 - 有疑问时选择"够用"方案，不做深度讨论
 - 先出可视化原型，再基于用户反馈调整
 - 设计文件写入 `sandbox/<name>/` 或 `docs/specs/lite-spec.md`
-- 完成后建议运行 `/taste-review` 评估审美一致性
+- 完成后建议运行 `/vibe-taste-review` 评估审美一致性
 
 ---
 
@@ -70,9 +70,9 @@
 
 | 设计类型 | 文件路径 | 完成后运行 |
 |---|---|---|
-| 产品需求 | `docs/specs/PRD-<name>.md` | `/gate-check` |
-| 架构决策 | `docs/arch/ADR-<n>.md` | `/review` |
-| 系统地图 | `docs/arch/SYSTEM-MAP.md` | `/review` |
+| 产品需求 | `docs/specs/PRD-<name>.md` | `/studio-gate-check` |
+| 架构决策 | `docs/arch/ADR-<n>.md` | `/studio-review` |
+| 系统地图 | `docs/arch/SYSTEM-MAP.md` | `/studio-review` |
 
 ### 2.3 示例交互模式
 

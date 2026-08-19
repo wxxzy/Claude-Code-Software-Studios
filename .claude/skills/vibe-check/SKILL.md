@@ -1,6 +1,6 @@
 ---
 name: vibe-check
-description: 意图对齐校准。在原型迭代 3-5 轮后，或用户表达"感觉不对"时使用。对齐"最初想要什么 vs 现在做出了什么"。
+description: 【Vibe】意图校准 — 重新对齐「最初想要 vs 现在做出」→ docs/specs/intent-log.md。当用户说「感觉不对/方向偏了」或原型迭代 3-5 轮后使用。
 context: fork
 agent: explainer
 ---
@@ -83,13 +83,13 @@ intent-log 路径: docs/specs/intent-log.md
 
 - **用户选 kill**: 归档 `sandbox/<name>/` 到 `sandbox/archive/`，追加"死因分析"到 intent-log
 - **用户选 pivot**: 建议重跑 `/vibe-start` 并保留 sandbox 作参考
-- **连续 3 次 vibe-check 都是 continue 且高一致性**: 提示可考虑 `/graduate`
+- **连续 3 次 vibe-check 都是 continue 且高一致性**: 提示可考虑 `/vibe-graduate`
 
 ---
 
 ## 协作路径
 
-- continue → 继续迭代 `/prototype` 或直接编辑
+- continue → 继续迭代 `/vibe-prototype` 或直接编辑
 - pivot → `/vibe-start` 重新对齐
 - kill → 归档流程
-- 稳定 → `/graduate` 晋升
+- 稳定 → `/vibe-graduate` 晋升

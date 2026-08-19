@@ -1,7 +1,7 @@
 # Micro ADR — <项目名>
 
 <!-- USDS 微观决策账本 -->
-<!-- 由 /micro-adr 追加维护 -->
+<!-- 由 /usds-micro-adr 追加维护 -->
 <!-- 完整 ADR 请见 docs/arch/ADR-*.md -->
 
 **项目名**: <name>
@@ -13,7 +13,7 @@
 
 - 一行一决策
 - 影响范围 ≤ 3 文件 且 可回退 ≤ 1 小时的决策放这里
-- 超出上述范围的用 `/arch-design` 写完整 ADR
+- 超出上述范围的用 `/studio-arch-design` 写完整 ADR
 - **反悔不删除原条目**，追加新条目记录改变
 
 ---

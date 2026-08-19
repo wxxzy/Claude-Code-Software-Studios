@@ -12,7 +12,7 @@
 
 ## 工作流偏好 (Workflow Preferences)
 - 代码变更后自动运行单元测试
-- 在上下文使用率达到 60% 时主动执行 /summarize-arch
+- 在上下文使用率达到 60% 时主动执行 /studio-summarize-arch
 - 在不同任务之间使用 /clear 清除会话
 
 ## 本地环境 (Local Environment)
@@ -26,7 +26,7 @@
 - 简要解释架构决策
 
 ## 个人快捷指令 (Personal Shortcuts)
-- 当我说 "review" 时，对最后修改的文件运行 /review
+- 当我说 "review" 时，对最后修改的文件运行 /studio-review
 - 当我说 "status" 时，显示 git status + production/backlog.md 中的任务状态
 ```
 

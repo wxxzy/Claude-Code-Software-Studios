@@ -156,13 +156,13 @@ CORE_FILES=(
   ".claude/rules/ai-generated-code.md"
   ".claude/rules/doc-standards.md"
   # --- Base skills ---
-  ".claude/skills/start"
-  ".claude/skills/onboard"
-  ".claude/skills/update"
-  ".claude/skills/mode-switch"
-  ".claude/skills/cost-report"
-  ".claude/skills/debt-log"
-  ".claude/skills/micro-adr"
+  ".claude/skills/usds-start"
+  ".claude/skills/usds-onboard"
+  ".claude/skills/usds-update"
+  ".claude/skills/usds-mode-switch"
+  ".claude/skills/usds-cost-report"
+  ".claude/skills/usds-debt-log"
+  ".claude/skills/usds-micro-adr"
   # --- Base agents ---
   ".claude/agents/delivery-manager.md"
   ".claude/agents/cost-accountant.md"
@@ -179,12 +179,12 @@ CORE_FILES=(
 VIBE_FILES=(
   ".claude/rules/vibe-mode.md"
   ".claude/skills/vibe-start"
-  ".claude/skills/prototype"
+  ".claude/skills/vibe-prototype"
   ".claude/skills/vibe-check"
-  ".claude/skills/graduate"
-  ".claude/skills/taste-review"
-  ".claude/skills/branch-vibe"
-  ".claude/skills/explain-back"
+  ".claude/skills/vibe-graduate"
+  ".claude/skills/vibe-taste-review"
+  ".claude/skills/vibe-branch"
+  ".claude/skills/vibe-explain-back"
   ".claude/agents/explorer.md"
   ".claude/agents/stylist.md"
   ".claude/agents/prompt-refiner.md"
@@ -198,14 +198,14 @@ VIBE_FILES=(
 STUDIO_FILES=(
   ".claude/rules/backend-api.md"
   ".claude/rules/test-conventions.md"
-  ".claude/skills/discovery"
-  ".claude/skills/setup-stack"
-  ".claude/skills/arch-design"
-  ".claude/skills/summarize-arch"
-  ".claude/skills/sprint-kickoff"
-  ".claude/skills/project-scan"
-  ".claude/skills/review"
-  ".claude/skills/gate-check"
+  ".claude/skills/studio-discovery"
+  ".claude/skills/studio-setup-stack"
+  ".claude/skills/studio-arch-design"
+  ".claude/skills/studio-summarize-arch"
+  ".claude/skills/studio-sprint-kickoff"
+  ".claude/skills/studio-project-scan"
+  ".claude/skills/studio-review"
+  ".claude/skills/studio-gate-check"
   ".claude/agents/product-director.md"
   ".claude/agents/technical-architect.md"
   ".claude/agents/lead-developer.md"
@@ -402,9 +402,9 @@ echo ""
 echo -e "${C_BOLD}下一步:${C_OFF}"
 case "$PROFILE" in
   vibe)   echo "  运行 claude → /vibe-start \"你的想法\"" ;;
-  studio) echo "  运行 claude → /onboard  然后  /discovery \"你的项目\"" ;;
-  minimal)echo "  运行 claude → /mode-switch 选择模式" ;;
-  full)   echo "  运行 claude → /onboard 了解双模态" ;;
+  studio) echo "  运行 claude → /usds-onboard  然后  /studio-discovery \"你的项目\"" ;;
+  minimal)echo "  运行 claude → /usds-mode-switch 选择模式" ;;
+  full)   echo "  运行 claude → /usds-onboard 了解双模态" ;;
 esac
 echo ""
 echo -e "${C_GRAY}卸载: bash install-usds.sh --uninstall${C_OFF}"

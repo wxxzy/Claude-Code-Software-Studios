@@ -48,9 +48,9 @@ Stylist 负责把用户对"感觉"的模糊表达转化为具体的视觉/交互
 ## 触发时机
 
 - `/vibe-start`：辅助 Prompt Refiner 收集视觉参考
-- `/prototype`：前端项目时主导视觉决策
+- `/vibe-prototype`：前端项目时主导视觉决策
 - `/vibe-check`：审美维度的校准问题
-- `/taste-review`（P1）：主导
+- `/vibe-taste-review`（P1）：主导
 
 ## 输出格式
 

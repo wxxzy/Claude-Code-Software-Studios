@@ -1,0 +1,47 @@
+---
+name: studio-summarize-arch
+description: 【Studio】架构快照 — 汇总累积的 ADR 为最终态 → ARCHITECTURE-STATE.md。当用户说「总结下当前架构」时使用。
+context: fork
+agent: technical-architect
+---
+
+# 技能：架构快照与总结 (/studio-summarize-arch)
+
+**执行代理**: `technical-architect` (技术架构师)
+
+---
+
+## 概述 (Summary)
+
+此技能用于在多个 ADR 被批准后，将零散的决策压缩并合并到一份 `docs/arch/ARCHITECTURE-STATE.md` (最终态架构文档) 中，从而减少代理每次会话时的上下文读取量，并确保新架构决策不会与旧决策冲突。
+
+## 工作流 (Workflow)
+
+1.  **扫描 (Scan)**: 架构师扫描 `docs/arch/ADR-*.md` 目录下的所有文件。
+2.  **提取方案 (Options)**:
+    - 方案 A: 全量更新。将所有活跃 ADR 映射到最终态文档。
+    - 方案 B: 增量更新。仅将最新通过的 ADR 同步到最终态。
+3.  **草案展示 (Draft)**: 展示 `docs/arch/ARCHITECTURE-STATE.md` 的快照。
+4.  **批准与更新 (Approval)**: 用户批准后，架构师重写或更新该文件，并可选地对旧 ADR 标记为 `Approved & Merged`。
+
+---
+
+## 成功门控 (Success Gate)
+
+- 产出了 `docs/arch/ARCHITECTURE-STATE.md`。
+- 新文档包含了所有核心决策（数据库结构、API 定义、技术栈）。
+- 上下文效率明显提升。
+
+## 输出约束 (Output Budget)
+
+**[强制]** 写入文件后，返回主上下文只输出：
+
+```
+架构快照已更新。
+
+- `docs/arch/ARCHITECTURE-STATE.md` — 合并了 [X] 个 ADR
+- 覆盖决策：[技术栈 / API 契约 / 数据库结构，列出命中的类别]
+- 标记为 Merged：[ADR 编号列表]
+```
+
+不得在返回摘要中重复 ARCHITECTURE-STATE.md 正文内容。

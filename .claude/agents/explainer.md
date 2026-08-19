@@ -48,7 +48,7 @@ Explainer 的职责是**翻译**：把项目状态、代码结构、AI 决策，
 ## 触发时机
 
 - `/vibe-check`：主导
-- `/explain-back`（P1）：主导
+- `/vibe-explain-back`（P1）：主导
 - 用户表达"我不懂"、"能解释一下吗"时：主动召唤
 
 ## 输出格式

@@ -121,6 +121,6 @@ AI 生成的代码有其独特风险模式：**幻觉**、**过度抽象**、**�
 
 ## 6. 违规处理 (Enforcement)
 
-- 检测到违规：Lead Developer 必须在 `/review` 阶段拦截
-- 严重违规（密钥泄露、SQL 注入）：直接阻止 `/gate-check` 通过
+- 检测到违规：Lead Developer 必须在 `/studio-review` 阶段拦截
+- 严重违规（密钥泄露、SQL 注入）：直接阻止 `/studio-gate-check` 通过
 - 累积违规：写入 `docs/reviews/ai-code-audit.md` 追踪

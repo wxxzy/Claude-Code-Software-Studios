@@ -57,10 +57,10 @@ sandbox/
 
 ## 4. 生命周期 (Lifecycle)
 
-- **创建**：由 `/prototype` 技能触发
+- **创建**：由 `/vibe-prototype` 技能触发
 - **迭代**：由 Explorer 主导，允许频繁重写
 - **校准**：每 3-5 轮迭代，触发 `/vibe-check`
-- **晋升**：经用户确认后，通过 `/graduate` 迁移到 `src/`
+- **晋升**：经用户确认后，通过 `/vibe-graduate` 迁移到 `src/`
 - **归档**：30 天未动的原型，提醒归档到 `sandbox/archive/`
 
 ---
@@ -80,7 +80,7 @@ sandbox/
 
 ## 6. 晋升门槛 (Graduation Gate)
 
-`sandbox/` 代码进入 `src/` 前，必须通过 `/graduate` 补齐：
+`sandbox/` 代码进入 `src/` 前，必须通过 `/vibe-graduate` 补齐：
 
 - [ ] 追认型 ADR（`docs/arch/ADR-<n>.md`）
 - [ ] 测试覆盖（符合 `test-conventions.md`）

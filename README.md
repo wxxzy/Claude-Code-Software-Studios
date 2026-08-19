@@ -15,11 +15,11 @@ USDS v2 不再假设所有项目都是严肃工程。同一套框架现在同时
 | 模式 | 场景 | 主要目录 | 主导规则 | 起手技能 |
 |---|---|---|---|---|
 | **Vibe Mode** | 探索、原型、个人玩具、周末项目 | `sandbox/**` | `vibe-mode.md`（宽松） | `/vibe-start` |
-| **Studio Mode** | 生产、团队、长期维护、客户交付 | `src/`, `docs/`, `tests/` | `global-standards.md`（严格） | `/discovery` |
+| **Studio Mode** | 生产、团队、长期维护、客户交付 | `src/`, `docs/`, `tests/` | `global-standards.md`（严格） | `/studio-discovery` |
 | **Hybrid Mode** | 一仓库两种共存 | 两者共存 | 按路径分派 | 按任务选 |
 
-模式由项目根目录的 `.usds-mode` 文件决定，可通过 `/mode-switch` 随时切换。
-两种模式之间通过 `/graduate` 单向晋升（Vibe → Studio）。
+模式由项目根目录的 `.usds-mode` 文件决定，可通过 `/usds-mode-switch` 随时切换。
+两种模式之间通过 `/vibe-graduate` 单向晋升（Vibe → Studio）。
 
 **共同底线**：无论哪种模式，密钥泄露、SQL 拼接、未验证输入、未锁版本依赖始终是 Hard Limits。
 
@@ -53,7 +53,7 @@ curl -fsSL https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/
 
 | Profile | 安装内容 | 适用人群 |
 |---|---|---|
-| `minimal` | 核心规则 + 基础技能（`/start`, `/onboard`, `/mode-switch`, `/update`, `/cost-report`, `/debt-log`, `/micro-adr`） | 想自己组装的高手 |
+| `minimal` | 核心规则 + 基础技能（`/usds-start`, `/usds-onboard`, `/usds-mode-switch`, `/usds-update`, `/usds-cost-report`, `/usds-debt-log`, `/usds-micro-adr`） | 想自己组装的高手 |
 | `vibe` | minimal + Vibe Pack（7 skill + 4 agent + 2 template） | 原型玩家、个人项目 |
 | `studio` | minimal + Studio Pack（8 skill + 8 agent + 4 template） | 严肃团队、生产项目 |
 | `full` | minimal + Vibe + Studio | Hybrid 混合项目 |
@@ -122,30 +122,30 @@ irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/
 
 ```bash
 /vibe-start "我想做一个能记账的小工具"   # 3-5 轮对话捕获意图 → lite-spec.md
-/prototype                             # 15 分钟内出可跑 demo → sandbox/<name>/
+/vibe-prototype                             # 15 分钟内出可跑 demo → sandbox/<name>/
 /vibe-check                            # 每 3-5 轮迭代校准意图 → intent-log.md
-/taste-review                          # 审美/体验维度评审 → docs/reviews/
-/explain-back                          # 隔几天回来先跑这个恢复上下文
-/branch-vibe                           # 想尝试完全不同的方向 → 平行 worktree
-/graduate                              # 原型稳定后晋升到 src/
+/vibe-taste-review                          # 审美/体验维度评审 → docs/reviews/
+/vibe-explain-back                          # 隔几天回来先跑这个恢复上下文
+/vibe-branch                           # 想尝试完全不同的方向 → 平行 worktree
+/vibe-graduate                              # 原型稳定后晋升到 src/
 ```
 
 ### 🏢 Studio Mode 全链路
 
 ```bash
-/onboard                    # 学习协作协议
-/discovery "项目想法"        # 生成 PRD → docs/specs/PRD.md
-/setup-stack                # 技术选型与骨架初始化
-/arch-design                # 定义 API 与数据模型 → docs/arch/ADR.md
-/sprint-kickoff             # 拆解 Backlog → production/backlog.md
+/usds-onboard                    # 学习协作协议
+/studio-discovery "项目想法"        # 生成 PRD → docs/specs/PRD.md
+/studio-setup-stack                # 技术选型与骨架初始化
+/studio-arch-design                # 定义 API 与数据模型 → docs/arch/ADR.md
+/studio-sprint-kickoff             # 拆解 Backlog → production/backlog.md
 # 编码...
-/review                     # 技术评审
-/gate-check                 # 发布质量审计
+/studio-review                     # 技术评审
+/studio-gate-check                 # 发布质量审计
 ```
 
 ### 🔀 Hybrid Mode
 
-自由组合两套技能，用 `/mode-switch` 切换默认场景。
+自由组合两套技能，用 `/usds-mode-switch` 切换默认场景。
 
 ---
 
@@ -177,28 +177,28 @@ irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/
 
 | 技能 | 模式 | 主导角色 | 产出物 |
 |---|---|---|---|
-| `/start` | 共享 | Delivery Manager | 引导到正确入口 |
-| `/onboard` | 共享 | Delivery Manager | 协议演练 |
-| `/mode-switch` | 共享 | Delivery Manager | `.usds-mode` |
-| `/update` | 共享 | Delivery Manager | 同步框架更新 |
-| `/cost-report` | 共享 | Cost Accountant | `docs/cost-ledger.md` |
-| `/debt-log` | 共享 | Debt Auditor | `docs/debt-ledger.md` |
-| `/micro-adr` | 共享 | Technical Architect | `docs/arch/micro-adr.md` |
+| `/usds-start` | 共享 | Delivery Manager | 引导到正确入口 |
+| `/usds-onboard` | 共享 | Delivery Manager | 协议演练 |
+| `/usds-mode-switch` | 共享 | Delivery Manager | `.usds-mode` |
+| `/usds-update` | 共享 | Delivery Manager | 同步框架更新 |
+| `/usds-cost-report` | 共享 | Cost Accountant | `docs/cost-ledger.md` |
+| `/usds-debt-log` | 共享 | Debt Auditor | `docs/debt-ledger.md` |
+| `/usds-micro-adr` | 共享 | Technical Architect | `docs/arch/micro-adr.md` |
 | `/vibe-start` | Vibe | Prompt Refiner | `docs/specs/lite-spec.md` |
-| `/prototype` | Vibe | Explorer | `sandbox/<name>/` |
+| `/vibe-prototype` | Vibe | Explorer | `sandbox/<name>/` |
 | `/vibe-check` | Vibe | Explainer | `docs/specs/intent-log.md` |
-| `/taste-review` | Vibe | Stylist | `docs/reviews/taste-<date>.md` |
-| `/branch-vibe` | Vibe | Explorer | 新 worktree + 独立 sandbox |
-| `/explain-back` | Vibe | Explainer | 一次性汇报（不落盘） |
-| `/graduate` | Vibe→Studio | Delivery Manager | 迁移到 `src/` |
-| `/discovery` | Studio | Product Director | `docs/specs/PRD.md` |
-| `/project-scan` | Studio | Architect | `docs/arch/SYSTEM-MAP.md` |
-| `/setup-stack` | Studio | Architect | 项目骨架 |
-| `/arch-design` | Studio | Architect | `docs/arch/ADR.md` |
-| `/summarize-arch` | Studio | Architect | 架构快照 |
-| `/sprint-kickoff` | Studio | Delivery Manager | `production/backlog.md` |
-| `/review` | Studio | Architect | 代码审计报告 |
-| `/gate-check` | Studio | QA Lead | 发布 Checklist |
+| `/vibe-taste-review` | Vibe | Stylist | `docs/reviews/taste-<date>.md` |
+| `/vibe-branch` | Vibe | Explorer | 新 worktree + 独立 sandbox |
+| `/vibe-explain-back` | Vibe | Explainer | 一次性汇报（不落盘） |
+| `/vibe-graduate` | Vibe→Studio | Delivery Manager | 迁移到 `src/` |
+| `/studio-discovery` | Studio | Product Director | `docs/specs/PRD.md` |
+| `/studio-project-scan` | Studio | Architect | `docs/arch/SYSTEM-MAP.md` |
+| `/studio-setup-stack` | Studio | Architect | 项目骨架 |
+| `/studio-arch-design` | Studio | Architect | `docs/arch/ADR.md` |
+| `/studio-summarize-arch` | Studio | Architect | 架构快照 |
+| `/studio-sprint-kickoff` | Studio | Delivery Manager | `production/backlog.md` |
+| `/studio-review` | Studio | Architect | 代码审计报告 |
+| `/studio-gate-check` | Studio | QA Lead | 发布 Checklist |
 
 ---
 
@@ -274,10 +274,10 @@ git commit -m "chore: 部署 USDS v2"
 
 ```bash
 # 检查更新
-/update
+/usds-update
 
 # 切换模式
-/mode-switch
+/usds-mode-switch
 
 # 卸载
 ./scripts/install-usds.sh --uninstall     # macOS/Linux

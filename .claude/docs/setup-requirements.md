@@ -19,4 +19,4 @@
 
 ## 4. 故障排查
 - 如果 `session-start.sh` 无法运行，请检查文件的执行权限 (`chmod +x .claude/hooks/*.sh`)。
-- 如果 `/start` 报错找不到技能，请确保 `CLAUDE.md` 位于项目根目录。
+- 如果 `/usds-start` 报错找不到技能，请确保 `CLAUDE.md` 位于项目根目录。

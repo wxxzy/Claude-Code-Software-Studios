@@ -14,7 +14,7 @@
 
 > 2026-08-18 冲刺：框架自身加固（JSON 解析分层、文档门控阻断化、测试/CI、目录缺口、文档销账）。原高优任务全部完成，无新激活任务。
 
-（空 — 待 `/sprint-kickoff` 拉取下一轮）
+（空 — 待 `/studio-sprint-kickoff` 拉取下一轮）
 
 ---
 
@@ -44,14 +44,14 @@
 
 ### 文档与规范完善
 
-- [ ] **T-018**: 为 `/sprint-kickoff` 技能在 `.claude/docs/templates/` 中补充更完整的 BACKLOG 示例（含任务依赖字段）
+- [ ] **T-018**: 为 `/studio-sprint-kickoff` 技能在 `.claude/docs/templates/` 中补充更完整的 BACKLOG 示例（含任务依赖字段）
   - 负责人: `delivery-manager` | 优先级: 低 | 预估: 1h
 
 ---
 
 ## 3. 已完成 (Done)
 
-- [x] **T-000**: 运行 `/project-scan` 完成系统架构快照（2026-06-16）
+- [x] **T-000**: 运行 `/studio-project-scan` 完成系统架构快照（2026-06-16）
 - [x] **T-001**: 在 `session-start.sh` 中检测解析器状态并输出明确提示（2026-08-18，随 ADR-001/D1 实现：jq/python 双缺时显示 `⚠️ json:regex (install jq)`，仅有 python 时显示 `json:python`）
 - [x] **T-002**: Hook JSON 解析迁移至分层方案（2026-08-18，ADR-001/D1：`lib/json.sh` jq→python→正则，python 带可执行探测；比原计划"全迁 Python"覆盖面更宽）
 - [x] **T-003**: `validate-commit.sh` PRD/ADR 章节缺失检查升级为阻断 `exit 2`（2026-08-18，ADR-001/D2；同步收窄作用域至 `PRD*`/`ADR*` 文件名，消除 SYSTEM-MAP 误报）
@@ -85,9 +85,9 @@ T-015 ──► T-016 (日志轮转两步)
 | :--- | :--- |
 | 待办 (To Do) | 尚未开始 |
 | 进行中 (In Progress) | 正在开发 |
-| 评审中 (Review) | 代码已写完，等待架构师通过 `/review` 审查 |
-| 完成 (Done) | 已合并并通过 `/gate-check` 验证 |
+| 评审中 (Review) | 代码已写完，等待架构师通过 `/studio-review` 审查 |
+| 完成 (Done) | 已合并并通过 `/studio-gate-check` 验证 |
 
 ---
 
-*本文档由 `/sprint-kickoff` 技能生成，由 `delivery-manager` 代理维护。任务完成后请更新对应状态，并在发布前运行 `/gate-check`。*
+*本文档由 `/studio-sprint-kickoff` 技能生成，由 `delivery-manager` 代理维护。任务完成后请更新对应状态，并在发布前运行 `/studio-gate-check`。*

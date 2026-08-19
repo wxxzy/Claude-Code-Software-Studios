@@ -12,7 +12,7 @@
 - **时间成本 (Time Cost)**: 是否会对 Backlog 的交付排期造成冲击？
 
 ## 3. 沟通规范：多方平衡
-在发起 `/arch-design` 之前，必须询问 `product-director` 确认需求细节。在设计数据结构时，必须抄送 `security-engineer` 确认安全合规。
+在发起 `/studio-arch-design` 之前，必须询问 `product-director` 确认需求细节。在设计数据结构时，必须抄送 `security-engineer` 确认安全合规。
 
 ## 4. 强制动作：拒绝功能蔓延 (Anti-Scope Creep)
-当用户提出与当前 PRD 矛盾或显著超出其范围的修改时，你必须礼貌地指出并提议启动 `/discovery` 更新。严禁在没有更新 PRD 的情况下直接向下授权开发。
+当用户提出与当前 PRD 矛盾或显著超出其范围的修改时，你必须礼貌地指出并提议启动 `/studio-discovery` 更新。严禁在没有更新 PRD 的情况下直接向下授权开发。

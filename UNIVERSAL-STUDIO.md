@@ -29,11 +29,11 @@
 
 ## 3. 双模态架构 (Dual Mode)
 
-同一框架服务两类场景，由 `.usds-mode` 声明，`/mode-switch` 切换：
+同一框架服务两类场景，由 `.usds-mode` 声明，`/usds-mode-switch` 切换：
 
 - **Vibe Mode** (`sandbox/**`): Demo-First，15 分钟出可跑 demo，宽松规则 + 不可豁免的安全 Hard Limits
-- **Studio Mode** (`src/`, `docs/`, `tests/`): Doc-First + Verify-First（`/gate-check` 通过才算交付）
-- **单向晋升**: Vibe 原型经 `/graduate` 补齐 ADR/测试/规范后迁入 `src/`；`src/**` 禁止依赖 `sandbox/**`
+- **Studio Mode** (`src/`, `docs/`, `tests/`): Doc-First + Verify-First（`/studio-gate-check` 通过才算交付）
+- **单向晋升**: Vibe 原型经 `/vibe-graduate` 补齐 ADR/测试/规范后迁入 `src/`；`src/**` 禁止依赖 `sandbox/**`
 
 ## 4. 技术栈默认倾向 (Technology Stack)
 
@@ -43,10 +43,10 @@
 
 ## 5. 关键工作流指令 (Slash Commands)
 
-- `/discovery`: 启动需求收集并生成 PRD。
-- `/arch-design`: 启动系统架构设计。
-- `/sprint-kickoff`: 将架构拆解为可执行的任务。
-- `/review` / `/gate-check`: 技术评审与发布质量门控。
-- `/vibe-start` / `/prototype` / `/vibe-check` / `/graduate`: Vibe 全链路。
+- `/studio-discovery`: 启动需求收集并生成 PRD。
+- `/studio-arch-design`: 启动系统架构设计。
+- `/studio-sprint-kickoff`: 将架构拆解为可执行的任务。
+- `/studio-review` / `/studio-gate-check`: 技术评审与发布质量门控。
+- `/vibe-start` / `/vibe-prototype` / `/vibe-check` / `/vibe-graduate`: Vibe 全链路。
 
 完整 22 个技能见 `README.md` 技能全表。

@@ -10,7 +10,7 @@
 
 我们要解决什么技术挑战？背景是什么？
 
-`/project-scan`（2026-08-18 刷新）确认框架存在三类自托管缺陷：
+`/studio-project-scan`（2026-08-18 刷新）确认框架存在三类自托管缺陷：
 
 1. **TD-001** — 5 个 hook/statusline 以 `jq` 可用与否分支解析 stdin JSON，无 `jq` 时回退 `grep` 正则，对含转义引号/特殊字符的字段会静默解析错误。Windows 原生环境通常不带 `jq`，提交验证在那里是不可靠的。
 2. **TD-002** — `validate-commit.sh` 对 PRD/ADR 缺失强制章节仅打印警告（`exit 0`），与 `doc-standards.md` "必须包含" 的措辞不匹配；且检查作用域是 `docs/arch/*.md` 全体，对 SYSTEM-MAP.md / TECH-DEBT.md 等非 ADR 文档持续产生误报。若直接升级为阻断，误报会变成误拦截。
@@ -22,7 +22,7 @@
 
 **D1 — JSON 解析分层降级 + 共享库**：新建 `.claude/hooks/lib/json.sh`，提供 `usds_json_str <json> <dotpath> [<dotpath>...]`，按 `jq` → `python3`/`python` → 正则（仅末段 key）顺序解析，返回首个非空字符串值。`validate-commit.sh`、`validate-push.sh`、`validate-assets.sh`、`log-agent.sh` 统一改用该库。`.claude/statusline.sh` **排除在外**（每次渲染多次 spawn python 的延迟不可接受，维持 jq→grep 现状）。`session-start.sh` 在 jq 与 python 双缺时输出降级提示（TD-005/T-014 的离线提示一并落实）。
 
-**D2 — PRD/ADR 章节检查阻断化 + 作用域收窄**：缺强制章节从警告升级为 `exit 2` 阻断；作用域从 `docs/specs/*.md`、`docs/arch/*.md` 收窄为 `docs/specs/PRD*.md`、`docs/arch/ADR*.md`（兼容 `/discovery` 产出的 `PRD.md` 与 `PRD-<n>.md`、`ADR-<n>.md` 命名约定）。JSON 非法检查（已阻断）与 TODO 风格警告（非阻断）不变。`doc-standards.md` 补注强制章节由 hook 阻断式执行。
+**D2 — PRD/ADR 章节检查阻断化 + 作用域收窄**：缺强制章节从警告升级为 `exit 2` 阻断；作用域从 `docs/specs/*.md`、`docs/arch/*.md` 收窄为 `docs/specs/PRD*.md`、`docs/arch/ADR*.md`（兼容 `/studio-discovery` 产出的 `PRD.md` 与 `PRD-<n>.md`、`ADR-<n>.md` 命名约定）。JSON 非法检查（已阻断）与 TODO 风格警告（非阻断）不变。`doc-standards.md` 补注强制章节由 hook 阻断式执行。
 
 **D3 — bats 测试套件 + GitHub Actions CI**：`tests/hooks/` 为核心 hooks（validate-commit、detect-gaps、validate-assets、lib/json）建立 bats 用例，临时 git 仓库 fixture + 绝对路径调脚本 + stdin 喂 JSON；CI 在 ubuntu 跑 bats（阻断门）+ shellcheck（首期仅报告）+ 双安装脚本 dry-run，windows 跑 git-bash smoke。`session-start.sh` 的网络路径测试（T-010）显式延后。
 

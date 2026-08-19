@@ -23,7 +23,7 @@
 
 ## 3. 评审分级 (Review Tiers)
 
-执行 `/review` 或 `/gate-check` 时，评审必须按以下分级进行：
+执行 `/studio-review` 或 `/studio-gate-check` 时，评审必须按以下分级进行：
 
 | 级别 | 范围 | 关注点 | 批准要求 |
 | :--- | :--- | :--- | :--- |

@@ -23,9 +23,9 @@ sandbox/
 
 ## 🚀 常用流程
 
-- 创建原型：`/prototype`
+- 创建原型：`/vibe-prototype`
 - 校准意图：`/vibe-check`
-- 晋升到 src：`/graduate`
+- 晋升到 src：`/vibe-graduate`
 - 归档：手动移动到 `archive/`
 
 ## 🔒 边界

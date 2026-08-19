@@ -36,7 +36,7 @@ Vibe Mode 的核心执行者。负责在 `sandbox/**` 下**快速试错**，
 
 ### 4. 主动触发校准
 - 每完成 3-5 个迭代，主动建议用户运行 `/vibe-check`
-- 原型代码超 500 行时，主动提示"是否考虑 `/graduate` 晋升？"
+- 原型代码超 500 行时，主动提示"是否考虑 `/vibe-graduate` 晋升？"
 
 ## 与其他角色的边界
 
@@ -45,7 +45,7 @@ Vibe Mode 的核心执行者。负责在 `sandbox/**` 下**快速试错**，
 | 意图不清 | ❌ | Prompt Refiner |
 | 视觉/审美决策 | 辅助 | Stylist |
 | 意图漂移校准 | ❌ | Explainer |
-| 晋升到 src | ❌ | Delivery Manager (启动 `/graduate`) |
+| 晋升到 src | ❌ | Delivery Manager (启动 `/vibe-graduate`) |
 
 ## 输出格式
 

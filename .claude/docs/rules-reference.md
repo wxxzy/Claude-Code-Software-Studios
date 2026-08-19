@@ -13,4 +13,4 @@
 - **强制性**: 任何代理在执行 `Write` 操作前，必须核对路径规则。
 
 ## 3. 自定义与扩展
-- 团队可以通过 `/setup-stack` 引导，在 `.claude/rules/library/` 中加载语言专有规则包（如 Python/FastAPI, JavaScript/React）。
+- 团队可以通过 `/studio-setup-stack` 引导，在 `.claude/rules/library/` 中加载语言专有规则包（如 Python/FastAPI, JavaScript/React）。

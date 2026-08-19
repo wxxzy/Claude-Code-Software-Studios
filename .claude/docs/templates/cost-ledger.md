@@ -1,7 +1,7 @@
 # Cost Ledger — <项目名>
 
 <!-- USDS 成本账本 -->
-<!-- 由 /cost-report 追加维护 -->
+<!-- 由 /usds-cost-report 追加维护 -->
 
 **项目名**: <name>
 **开始日期**: <YYYY-MM-DD>

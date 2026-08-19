@@ -22,7 +22,7 @@ if [ -f "$LOCAL_VERSION_FILE" ]; then
         OFFLINE_NOTE=" (offline: version check skipped)"
     fi
     if [ -n "$REMOTE_VERSION" ] && [ "$LOCAL_VERSION" != "$REMOTE_VERSION" ]; then
-        UPDATE_NOTICE=" 🚀 v${REMOTE_VERSION} available — /update"
+        UPDATE_NOTICE=" 🚀 v${REMOTE_VERSION} available — /usds-update"
     fi
 fi
 

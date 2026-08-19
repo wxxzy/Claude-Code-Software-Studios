@@ -1,6 +1,6 @@
 ---
 name: vibe-start
-description: Vibe Mode 轻量意图捕获。当用户想快速尝试一个想法、做原型或个人玩具项目时使用。替代重量级 /discovery 流程。
+description: 【Vibe】轻量意图捕获 — 3-5 轮对话把想法变成 spec → docs/specs/lite-spec.md。当用户说「快速试个东西/做个小玩具」时使用。
 context: fork
 agent: prompt-refiner
 ---
@@ -16,7 +16,7 @@ agent: prompt-refiner
 面向 vibe coding 场景，用 3-5 轮对话把模糊想法转化为可执行方向。
 产出 `docs/specs/lite-spec.md`——一个轻量级、审美优先的意图文档。
 
-**不适用场景**：企业项目、需要长期维护的严肃系统 → 请使用 `/discovery`。
+**不适用场景**：企业项目、需要长期维护的严肃系统 → 请使用 `/studio-discovery`。
 
 ---
 
@@ -26,7 +26,7 @@ agent: prompt-refiner
 2. **确认模式**:
    - 检查 `.usds-mode` 文件
    - 若未声明或不是 `vibe`，使用 `ask_user` 询问："这是探索原型还是严肃项目？"
-   - 若是严肃项目，建议改用 `/discovery`
+   - 若是严肃项目，建议改用 `/studio-discovery`
 3. **意图访谈** (最多 5 轮)：
    - 第 1 轮：一句话描述你想做什么？
    - 第 2 轮：有类似产品参考吗？有截图/URL吗？（Stylist 介入）
@@ -34,7 +34,7 @@ agent: prompt-refiner
    - 第 4 轮：哪些明确**不做**？
    - 第 5 轮：给这个项目起个名字？
 4. **生成 lite-spec**: 基于 `.claude/docs/templates/lite-spec.md` 模板生成文档
-5. **确认**: 使用 `ask_user` 提供 [开始原型 `/prototype`] [调整] [取消] 三选项
+5. **确认**: 使用 `ask_user` 提供 [开始原型 `/vibe-prototype`] [调整] [取消] 三选项
 6. **结束**: 用户确认后写入 `docs/specs/lite-spec.md`
 
 ---
@@ -57,7 +57,7 @@ Vibe 意图捕获完成。
 
 - 项目名: [name]
 - 一句话: [intent]
-- 下一步: 运行 `/prototype` 开始出 demo
+- 下一步: 运行 `/vibe-prototype` 开始出 demo
 
 lite-spec 路径: docs/specs/lite-spec.md
 ```
@@ -68,5 +68,5 @@ lite-spec 路径: docs/specs/lite-spec.md
 
 ## 协作路径
 
-- 完成后 → `/prototype` (交棒 `explorer`)
-- 若晋升严肃项目 → `/graduate` 转为 PRD
+- 完成后 → `/vibe-prototype` (交棒 `explorer`)
+- 若晋升严肃项目 → `/vibe-graduate` 转为 PRD

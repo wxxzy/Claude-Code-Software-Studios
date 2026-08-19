@@ -48,7 +48,7 @@
 
 ## 技术栈倾向 (Optional)
 
-<!-- 若用户有偏好，记录；否则由 /prototype 时决定 -->
+<!-- 若用户有偏好，记录；否则由 /vibe-prototype 时决定 -->
 
 - 前端：<未定 / Next.js / 纯 HTML / ...>
 - 后端：<未定 / Python / Node / 无后端 / ...>
