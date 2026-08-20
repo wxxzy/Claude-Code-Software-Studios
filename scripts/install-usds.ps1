@@ -30,12 +30,74 @@ param(
     [string]$Ref = 'master'
 )
 
-$ErrorActionPreference = 'Stop'
+# --------------------------------------------------------------------------
+# Exit semantics: when run as a .ps1 FILE, "exit N" sets the script exit code.
+# But in a dynamic scriptblock (irm | iex / [scriptblock]::Create(...)), "exit"
+# terminates the USER'S ENTIRE PowerShell session (the window/tab closes).
+# So the whole body lives in this function and RETURNS codes; the dispatcher
+# at the bottom of the file decides how to terminate.
+# --------------------------------------------------------------------------
+function Invoke-USDSMain {
+    [CmdletBinding()]
+    param(
+        [ValidateSet('minimal','vibe','studio','full','')]
+        [string]$Profile = '',
+        [switch]$DryRun,
+        [switch]$Force,
+        [switch]$NoSamples,
+        [switch]$Uninstall,
+        [string]$Ref = 'master'
+    )
 
-# ---------- Detect piped / non-interactive mode (irm | iex, CI, ...) ----------
+    $ErrorActionPreference = 'Stop'
+
+    # ---------- Detect piped / non-interactive mode (irm | iex, CI, ...) ----------
 # When stdin is not a console, Read-Host cannot receive input -> skip prompts
 $IsPipedInstall = [Console]::IsInputRedirected -or -not [Environment]::UserInteractive
 
+# ---------- Constants ----------
+$RepoUrl = "https://github.com/wxxzy/Claude-Code-Software-Studios"
+$ManifestFile = ".usds-manifest"
+$ModeFile = ".usds-mode"
+
+function Write-Info($msg)    { Write-Host $msg -ForegroundColor Cyan }
+function Write-Dim($msg)     { Write-Host $msg -ForegroundColor DarkGray }
+function Write-Ok($msg)      { Write-Host $msg -ForegroundColor Green }
+function Write-Warn($msg)    { Write-Host $msg -ForegroundColor Yellow }
+function Write-Err($msg)     { Write-Host $msg -ForegroundColor Red }
+
+# ---------- Uninstall branch (before the piped guard: uninstall needs no -Profile) ----------
+if ($Uninstall) {
+    if (-not (Test-Path $ManifestFile)) {
+        Write-Err "[x] $ManifestFile not found, nothing to uninstall"; return 1
+    }
+    Write-Warn "[!] The following USDS-installed files will be removed:"
+    # Write-Host, NOT bare pipeline output: anything the function emits to the
+    # output stream joins its return value and corrupts the exit code
+    Get-Content $ManifestFile | ForEach-Object { Write-Host "  $_" }
+    if ($IsPipedInstall -and -not $Force) {
+        # A piped run cannot answer the confirmation prompt; demand explicit intent
+        Write-Host ""
+        Write-Err "[x] Piped mode: rerun with -Uninstall -Force to confirm the removal listed above"
+        return 1
+    }
+    if (-not $Force) {
+        $ans = Read-Host "Proceed? [y/N]"
+        if ($ans -ne 'y' -and $ans -ne 'Y') { Write-Host "Cancelled"; return 0 }
+    }
+    Get-Content $ManifestFile | ForEach-Object {
+        $line = $_.Trim()
+        if ($line -and -not $line.StartsWith('#') -and (Test-Path $line)) {
+            Remove-Item -Path $line -Recurse -Force
+            Write-Dim "removed: $line"
+        }
+    }
+    Remove-Item -Path $ManifestFile -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path $ModeFile -Force -ErrorAction SilentlyContinue
+    Write-Ok "[ok] Uninstall complete"; return 0
+}
+
+# ---------- Piped-mode guard (install path; uninstall was handled above) ----------
 if ($IsPipedInstall) {
     Write-Host ""
     Write-Host "[!] Non-interactive/piped install detected" -ForegroundColor Yellow
@@ -53,40 +115,8 @@ if ($IsPipedInstall) {
         Write-Host "Examples:" -ForegroundColor White
         Write-Host "  & ([scriptblock]::Create((irm <url>))) -Profile vibe"
         Write-Host "  & ([scriptblock]::Create((irm <url>))) -Profile studio -DryRun"
-        exit 1
+        return 1
     }
-}
-
-# ---------- Constants ----------
-$RepoUrl = "https://github.com/wxxzy/Claude-Code-Software-Studios"
-$ManifestFile = ".usds-manifest"
-$ModeFile = ".usds-mode"
-
-function Write-Info($msg)    { Write-Host $msg -ForegroundColor Cyan }
-function Write-Dim($msg)     { Write-Host $msg -ForegroundColor DarkGray }
-function Write-Ok($msg)      { Write-Host $msg -ForegroundColor Green }
-function Write-Warn($msg)    { Write-Host $msg -ForegroundColor Yellow }
-function Write-Err($msg)     { Write-Host $msg -ForegroundColor Red }
-
-# ---------- Uninstall branch ----------
-if ($Uninstall) {
-    if (-not (Test-Path $ManifestFile)) {
-        Write-Err "[x] $ManifestFile not found, nothing to uninstall"; exit 1
-    }
-    Write-Warn "[!] The following USDS-installed files will be removed:"
-    Get-Content $ManifestFile
-    $ans = Read-Host "Proceed? [y/N]"
-    if ($ans -ne 'y' -and $ans -ne 'Y') { Write-Host "Cancelled"; exit 0 }
-    Get-Content $ManifestFile | ForEach-Object {
-        $line = $_.Trim()
-        if ($line -and -not $line.StartsWith('#') -and (Test-Path $line)) {
-            Remove-Item -Path $line -Recurse -Force
-            Write-Dim "removed: $line"
-        }
-    }
-    Remove-Item -Path $ManifestFile -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path $ModeFile -Force -ErrorAction SilentlyContinue
-    Write-Ok "[ok] Uninstall complete"; exit 0
 }
 
 # ---------- Profile selection ----------
@@ -106,7 +136,7 @@ if (-not $Profile) {
         '3' { $Profile = 'studio' }
         '4' { $Profile = 'full' }
         ''  { $Profile = 'studio' }
-        default { Write-Err "Invalid choice"; exit 1 }
+        default { Write-Err "Invalid choice"; return 1 }
     }
 }
 
@@ -235,7 +265,7 @@ if ($DryRun) {
         Write-Host ""
     }
     Write-Dim "No changes made. Remove -DryRun to execute for real."
-    exit 0
+    return 0
 }
 
 # ---------- Download ----------
@@ -256,12 +286,27 @@ try {
         Select-Object -First 1 -ExpandProperty FullName
 
     if (-not $SourceRoot) {
-        Write-Err "[x] Source directory not found after extraction"; exit 1
+        Write-Err "[x] Source directory not found after extraction"; return 1
     }
 
     # ---------- Install ----------
-    $Installed = @()
-    $Skipped = @()
+    # List[string] (reference type): mutated in place, so accumulation inside
+    # Install-Item-Local works under EVERY invocation form. Plain arrays +
+    # $script: += broke in dynamic scriptblocks (irm | iex / [scriptblock]::Create
+    # have no distinct script scope), leaving the manifest nearly empty.
+    $Installed = [System.Collections.Generic.List[string]]::new()
+    $Skipped = [System.Collections.Generic.List[string]]::new()
+
+    # Single batch prompt instead of one question per existing file
+    # (an upgrade used to ask 20-30 sequential [y/N] questions)
+    $Existing = @($FilesToInstall | Where-Object { Test-Path $_ })
+    if ($Existing.Count -gt 0 -and -not $Force) {
+        Write-Warn "[!] $($Existing.Count) item(s) already exist:"
+        $Existing | Select-Object -First 10 | ForEach-Object { Write-Dim "    $_" }
+        if ($Existing.Count -gt 10) { Write-Dim "    ... and $($Existing.Count - 10) more" }
+        $ans = Read-Host "Overwrite ALL existing items? [y/N]"
+        if ($ans -eq 'y' -or $ans -eq 'Y') { $Force = $true }
+    }
 
     function Install-Item-Local {
         param([string]$Rel)
@@ -270,21 +315,16 @@ try {
         if (-not (Test-Path $Src)) {
             Write-Dim "  [skip] source missing: $Rel"; return
         }
-        if (Test-Path $Dst) {
-            if (-not $Force) {
-                $ans = Read-Host "  $Rel exists, overwrite? [y/N]"
-                if ($ans -ne 'y' -and $ans -ne 'Y') {
-                    $script:Skipped += $Rel
-                    Write-Dim "  [skip] $Rel"; return
-                }
-            }
+        if ((Test-Path $Dst) -and -not $Force) {
+            $Skipped.Add($Rel)
+            Write-Dim "  [skip] exists, kept: $Rel"; return
         }
         $DstDir = Split-Path -Parent $Dst
         if ($DstDir -and -not (Test-Path $DstDir)) {
             New-Item -ItemType Directory -Path $DstDir -Force | Out-Null
         }
         Copy-Item -Path $Src -Destination $Dst -Recurse -Force
-        $script:Installed += $Rel
+        $Installed.Add($Rel)
         Write-Ok "  [ok] $Rel"
     }
 
@@ -331,7 +371,7 @@ try {
             $ans = Read-Host "Install the sample docs/ directory? [y/N]"
             if ($ans -eq 'y' -or $ans -eq 'Y') {
                 Copy-Item -Path (Join-Path $SourceRoot 'docs') -Destination '.' -Recurse -Force
-                $Installed += 'docs'
+                $Installed.Add('docs')
                 Write-Ok "  [ok] docs/ (sample)"
             }
         }
@@ -345,7 +385,7 @@ try {
             $ans = Read-Host "No README.md found; install the USDS starter README? [y/N]"
             if ($ans -eq 'y' -or $ans -eq 'Y') {
                 Copy-Item -Path (Join-Path $SourceRoot 'README.md') -Destination '.' -Force
-                $Installed += 'README.md'
+                $Installed.Add('README.md')
                 Write-Ok "  [ok] README.md"
             }
         }
@@ -371,7 +411,7 @@ last_switched: $today
 reason: initialized by install-usds.ps1 -Profile $Profile
 locked: false
 "@ | Out-File -FilePath $ModeFile -Encoding ascii
-        $Installed += $ModeFile
+        $Installed.Add($ModeFile)
         Write-Ok "  [ok] $ModeFile (mode=$Mode)"
     }
 
@@ -383,7 +423,7 @@ locked: false
         "# profile: $Profile",
         "# ref: $Ref"
     )
-    ($header + $Installed) | Out-File -FilePath $ManifestFile -Encoding ascii
+    ($header + $Installed.ToArray()) | Out-File -FilePath $ManifestFile -Encoding ascii
 
     # ---------- Final report ----------
     Write-Host ""
@@ -391,6 +431,9 @@ locked: false
     Write-Host "  Profile:  $Profile"
     Write-Host "  Installed: $($Installed.Count) item(s)"
     Write-Host "  Skipped:   $($Skipped.Count) item(s)"
+    if ($Skipped.Count -gt 0) {
+        Write-Dim "  Tip: rerun with -Force to overwrite the $($Skipped.Count) kept item(s)"
+    }
     Write-Host "  Manifest:  $ManifestFile"
     Write-Host ""
     Write-Host "Next steps:" -ForegroundColor White
@@ -406,4 +449,18 @@ locked: false
 finally {
     if (Test-Path $TempZip) { Remove-Item -Path $TempZip -Force -ErrorAction SilentlyContinue }
     if (Test-Path $TempDir) { Remove-Item -Path $TempDir -Recurse -Force -ErrorAction SilentlyContinue }
+}
+
+    return 0
+}
+
+# ---------- Dispatcher ----------
+# File execution: propagate the exit code normally.
+# Scriptblock execution (irm | iex): return WITHOUT calling exit, so the
+# user's PowerShell session survives; expose the code via $global:LASTEXITCODE.
+$__rc = Invoke-USDSMain @PSBoundParameters
+if ($PSCommandPath) {
+    exit $__rc
+} else {
+    $global:LASTEXITCODE = $__rc
 }

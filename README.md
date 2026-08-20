@@ -284,6 +284,9 @@ git commit -m "chore: 部署 USDS v2"
 # 卸载
 ./scripts/install-usds.sh --uninstall     # macOS/Linux
 .\scripts\install-usds.ps1 -Uninstall     # Windows
+# 远程（不落盘）卸载——管道模式无法交互确认，需显式 --force / -Force
+curl -fsSL <raw-url>/install-usds.sh | bash -s -- --uninstall --force
+& ([scriptblock]::Create((irm <raw-url>/install-usds.ps1))) -Uninstall -Force
 ```
 
 ---

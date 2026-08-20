@@ -87,8 +87,16 @@ uninstall() {
   fi
   echo -e "${C_YELLOW}⚠ 将删除以下由 USDS 安装的文件:${C_OFF}"
   cat "$MANIFEST_FILE"
-  read -rp "确认继续？[y/N] " ans
-  [[ "$ans" != "y" && "$ans" != "Y" ]] && { echo "已取消"; exit 0; }
+  if $IS_PIPED && ! $FORCE; then
+    # 管道模式无法回答确认提示，必须显式 --force 表达删除意图
+    echo ""
+    echo -e "${C_RED}✗ 管道模式：请加 --force 确认删除上面列出的文件${C_OFF}"
+    exit 1
+  fi
+  if ! $FORCE; then
+    read -rp "确认继续？[y/N] " ans </dev/tty
+    [[ "$ans" != "y" && "$ans" != "Y" ]] && { echo "已取消"; exit 0; }
+  fi
   while IFS= read -r line; do
     [[ -z "$line" || "$line" == "#"* ]] && continue
     [[ -e "$line" ]] && rm -rf "$line" && echo -e "${C_GRAY}removed: $line${C_OFF}"
@@ -300,6 +308,21 @@ fi
 INSTALLED=()
 SKIPPED=()
 
+# 一次性批量确认（升级时逐文件询问会连续弹 20-30 次 [y/N]）
+EXISTING=()
+for item in "${FILES_TO_INSTALL[@]}"; do
+  [[ -e "$item" ]] && EXISTING+=("$item")
+done
+if [[ "${#EXISTING[@]}" -gt 0 ]] && ! $FORCE; then
+  echo -e "${C_YELLOW}⚠ 已存在 ${#EXISTING[@]} 个条目:${C_OFF}"
+  printf '  %s\n' "${EXISTING[@]:0:10}"
+  if [[ "${#EXISTING[@]}" -gt 10 ]]; then
+    echo "  ...（其余 $(( ${#EXISTING[@]} - 10 )) 个）"
+  fi
+  read -rp "全部覆盖？[y/N] " ans </dev/tty
+  if [[ "$ans" == "y" || "$ans" == "Y" ]]; then FORCE=true; fi
+fi
+
 install_item() {
   local rel="$1"
   local src="$SOURCE_ROOT/$rel"
@@ -310,13 +333,10 @@ install_item() {
     return
   fi
 
-  if [[ -e "$dst" ]]; then
-    if ! $FORCE; then
-      read -rp "  已存在 $rel，覆盖？[y/N] " ans </dev/tty
-      if [[ "$ans" != "y" && "$ans" != "Y" ]]; then
-        SKIPPED+=("$rel"); echo -e "${C_GRAY}  ⊘ 跳过: $rel${C_OFF}"; return
-      fi
-    fi
+  if [[ -e "$dst" ]] && ! $FORCE; then
+    SKIPPED+=("$rel")
+    echo -e "${C_GRAY}  ⊘ 已存在，保留: $rel${C_OFF}"
+    return
   fi
 
   mkdir -p "$(dirname "$dst")"
@@ -427,6 +447,9 @@ echo -e "${C_GREEN}${C_BOLD}✨ USDS 已就绪${C_OFF}"
 echo -e "  Profile:  $PROFILE"
 echo -e "  已安装:   ${#INSTALLED[@]} 项"
 echo -e "  已跳过:   ${#SKIPPED[@]} 项"
+if [[ "${#SKIPPED[@]}" -gt 0 ]]; then
+  echo -e "  提示:     加 --force 可覆盖保留的 ${#SKIPPED[@]} 项"
+fi
 echo -e "  Manifest: $MANIFEST_FILE"
 echo ""
 echo -e "${C_BOLD}下一步:${C_OFF}"

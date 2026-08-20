@@ -75,6 +75,35 @@ jobs:
         shell: pwsh
         run: .\scripts\install-usds.ps1 -Profile studio -DryRun
 
+      - name: Installer scriptblock e2e (irm | iex semantics)
+        # Locks three remote-form bugs: (1) "exit" in a dynamic scriptblock
+        # kills the user's whole PowerShell session, (2) $script:-scoped
+        # accumulation left the manifest nearly empty, (3) piped uninstall
+        # demanded -Profile / could never confirm. If this step survives to
+        # the end, all three stay fixed.
+        shell: pwsh
+        run: |
+          $T = Join-Path $env:TEMP "usds-e2e-$([guid]::NewGuid().ToString('N'))"
+          New-Item -ItemType Directory -Path $T | Out-Null
+          Push-Location $T
+          try {
+            $s = Get-Content .\scripts\install-usds.ps1 -Raw
+            & ([scriptblock]::Create($s)) -Profile studio -Force *> $null
+            if ($LASTEXITCODE -ne 0) { throw "scriptblock install rc=$LASTEXITCODE (session survived?)" }
+            $manifest = Join-Path $T '.usds-manifest'
+            $entries = (Get-Content $manifest | Where-Object { $_ -notmatch '^#' }).Count
+            if ($entries -lt 40) { throw "manifest too small: $entries entries (scope accumulation regression)" }
+            & ([scriptblock]::Create($s)) -Uninstall *> $null
+            if ($LASTEXITCODE -ne 1) { throw "uninstall without -Force must fail rc=1, got $LASTEXITCODE" }
+            & ([scriptblock]::Create($s)) -Uninstall -Force *> $null
+            if ($LASTEXITCODE -ne 0) { throw "uninstall -Force rc=$LASTEXITCODE" }
+            if (Test-Path $manifest) { throw "manifest not removed" }
+            Write-Host "scriptblock e2e OK: $entries manifest entries, session survived all runs"
+          } finally {
+            Pop-Location
+            Remove-Item $T -Recurse -Force -ErrorAction SilentlyContinue
+          }
+
       - name: Hook smoke via git-bash (validate-push)
         shell: pwsh
         run: |
