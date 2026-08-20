@@ -85,9 +85,12 @@ jobs:
         run: |
           $T = Join-Path $env:TEMP "usds-e2e-$([guid]::NewGuid().ToString('N'))"
           New-Item -ItemType Directory -Path $T | Out-Null
+          # Read the installer BEFORE Push-Location: relative paths resolve
+          # against the (empty) temp dir afterwards
+          $s = Get-Content .\scripts\install-usds.ps1 -Raw
+          if (-not $s) { throw "installer source not read" }
           Push-Location $T
           try {
-            $s = Get-Content .\scripts\install-usds.ps1 -Raw
             & ([scriptblock]::Create($s)) -Profile studio -Force *> $null
             if ($LASTEXITCODE -ne 0) { throw "scriptblock install rc=$LASTEXITCODE (session survived?)" }
             $manifest = Join-Path $T '.usds-manifest'
