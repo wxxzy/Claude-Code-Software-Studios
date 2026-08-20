@@ -60,11 +60,12 @@
 - **优先级**: P3 → 已解决
 - **修复**: 仓库内补 `docs/specs/.gitkeep`、`docs/reviews/.gitkeep`；两个安装脚本新增"目录预创建"步骤（core → `production/session-state`、`production/session-logs`；vibe → `sandbox`；studio/full → `docs/specs`、`docs/arch`、`docs/reviews`），已存在则跳过、dry-run 可预览、不入 manifest（卸载不删用户内容）（T-004）。
 
-### TD-008 — `install-usds.ps1` UTF-8 无 BOM 导致 Windows PowerShell 5.1 解析失败 — ✅ Closed (2026-08-18)
+### TD-008 — `install-usds.ps1` 编码在 PS 5.1 本地执行与 `irm | iex` 管道之间互斥 — ✅ Closed (2026-08-19, 二次修复)
 
-- **优先级**: P2（本次扫描新发现并当场修复）
-- **描述**: 脚本含中文且为 UTF-8 无 BOM。PowerShell 5.1（大量 Windows 用户的默认 `powershell.exe`）对无 BOM 文件按 ANSI 读取 → 乱码 → 解析错误，本地执行 `.\install-usds.ps1` 直接失败。PowerShell 7+ 不受影响。
-- **修复**: 重新保存为 UTF-8 with BOM（5.1 与 7+ 均兼容），本地 5.1 dry-run 验证通过。
+- **优先级**: P2（v2.1.0 发布后用户实测复现）
+- **描述**: 脚本含中文。第一轮修复（加 UTF-8 BOM）只解决了本地执行：PS 5.1 对无 BOM 文件按 ANSI 读取 → 乱码 → 解析错误。但 BOM 方案在 `irm <url> | iex` 管道下反噬——`iex` 把字符串首的 U+FEFF 当非法 token，`[CmdletBinding]`/`param` 全部报"意外的属性"。中文 + BOM + iex 三者互斥，是编码层面的根本冲突（该陷阱本会话内已咬人三次：乱码 → edit 工具丢 BOM → 毒化管道）。
+- **最终修复**: 安装器重写为**纯 ASCII**（英文输出）——本地执行不需要 BOM、管道无 BOM 可毒化、任何编辑器/编码/PS 版本行为一致。附带修复：`.usds-mode` 与 manifest 输出编码改为 ascii（原 `utf8` 在 PS 5.1 下写 BOM，导致 statusline.sh 的 `grep '^mode:'` 匹配不到首行，模式检测静默回落默认值）。
+- **回归门禁**: `tests/hooks/installer-ps1.bats`——任何非 ASCII 字节（含 CJK/emoji/BOM）直接红。sh 安装器保留中文（bash/curl 管道对 UTF-8 无解析风险，不对称是有意为之）。
 
 ---
 
@@ -89,7 +90,7 @@
 | TD-005 | P3 | Closed (2026-08-18) | `devops-engineer` | T-014 |
 | TD-006 | P3 | Open | `delivery-manager` | T-015/T-016 |
 | TD-007 | P3 | Closed (2026-08-18) | `devops-engineer` | T-004 |
-| TD-008 | P2 | Closed (2026-08-18) | `devops-engineer` | ps1 BOM 修复 |
+| TD-008 | P2 | Closed (2026-08-19) | `devops-engineer` | ps1 纯 ASCII 重写（BOM 方案二次回归后废弃） |
 
 ---
 

@@ -31,6 +31,8 @@ v2 支持**分层安装**：不再一次性塞全家桶。选择你实际需要�
 
 ### Windows (PowerShell)
 
+> 安装器输出为英文（纯 ASCII）——这是刻意设计：Windows PowerShell 5.1 解析中文脚本需要 UTF-8 BOM，而 BOM 会破坏 `irm | iex` 管道执行，纯 ASCII 是唯一两全的编码（见 `docs/arch/TECH-DEBT.md` TD-008）。
+
 ```powershell
 # 交互式安装（推荐首次使用）
 irm https://raw.githubusercontent.com/wxxzy/Claude-Code-Software-Studios/master/scripts/install-usds.ps1 | iex
