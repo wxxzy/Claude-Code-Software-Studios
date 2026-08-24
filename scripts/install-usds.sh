@@ -178,6 +178,10 @@ CORE_FILES=(
   # --- Base docs & templates ---
   ".claude/docs/quick-start.md"
   ".claude/docs/directory-structure.md"
+  ".claude/docs/skills-reference.md"
+  ".claude/docs/coordination-rules.md"
+  ".claude/docs/CLAUDE-local-template.md"
+  ".claude/docs/settings-local-template.md"
   ".claude/docs/templates/cost-ledger.md"
   ".claude/docs/templates/debt-ledger.md"
   ".claude/docs/templates/micro-adr.md"

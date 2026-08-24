@@ -56,7 +56,52 @@ if [ -f "production/session-state/active.md" ]; then
     RESUME=" | ⚠️ resume: production/session-state/active.md"
 fi
 
+# --- Cross-session memory recap (ADR-003/D1) ---
+# session-stop.sh (Stop hook) writes session-log.md; this reads the LAST
+# block back so the new session opens knowing what happened last time.
+# Best-effort: any missing/malformed input yields silence, never blocks startup.
+RECAP=""
+SESSION_LOG="production/session-logs/session-log.md"
+if [ -f "$SESSION_LOG" ]; then
+    LAST_HEADER=$(awk '
+        /^## (Session End|Archived Session State):/ { ts=$0; uncommitted=0 }
+        /^### Uncommitted Changes/ { uncommitted=1 }
+        END { if (ts != "") { print ts; print uncommitted } }
+    ' "$SESSION_LOG" 2>/dev/null)
+    if [ -n "$LAST_HEADER" ]; then
+        RAW_TS=$(echo "$LAST_HEADER" | sed -n '1p' | sed -E 's/^## (Session End|Archived Session State): //')
+        UNCOMMITTED_FLAG=$(echo "$LAST_HEADER" | sed -n '2p')
+        if [ "${#RAW_TS}" -ge 13 ]; then
+            PRETTY_TS="${RAW_TS:0:4}-${RAW_TS:4:2}-${RAW_TS:6:2} ${RAW_TS:9:2}:${RAW_TS:11:2}"
+        else
+            PRETTY_TS="$RAW_TS"
+        fi
+        if [ "$UNCOMMITTED_FLAG" = "1" ]; then
+            RECAP=" | last: ${PRETTY_TS} (uncommitted changes)"
+        else
+            RECAP=" | last: ${PRETTY_TS}"
+        fi
+    fi
+fi
+
+# --- Debt ledger summary (ADR-003/D1) ---
+# Only the count of unresolved entries under "## 未还清" — never the content,
+# to keep this a single-line hint rather than a context dump.
+DEBT_NOTE=""
+DEBT_FILE="docs/debt-ledger.md"
+if [ -f "$DEBT_FILE" ]; then
+    OPEN_COUNT=$(awk '
+        /^## 未还清/ { f=1; next }
+        /^## 已还清/ { f=0 }
+        f && /^### DEBT-[0-9]/ { c++ }
+        END { print c+0 }
+    ' "$DEBT_FILE" 2>/dev/null)
+    if [ "${OPEN_COUNT:-0}" -gt 0 ] 2>/dev/null; then
+        DEBT_NOTE=" | debt: ${OPEN_COUNT} open"
+    fi
+fi
+
 # Single-line output
-echo "[USDS${UPDATE_NOTICE}${OFFLINE_NOTE} | ${BRANCH:-no-git} | ${STATE}${RESUME}${PARSER_NOTE}]"
+echo "[USDS${UPDATE_NOTICE}${OFFLINE_NOTE} | ${BRANCH:-no-git} | ${STATE}${RESUME}${PARSER_NOTE}${RECAP}${DEBT_NOTE}]"
 
 exit 0
