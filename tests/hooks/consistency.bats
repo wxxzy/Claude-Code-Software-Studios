@@ -102,3 +102,17 @@ extract_ps1_list() {
     v=$(tr -d '[:space:]' < "$REPO_ROOT/.claude/VERSION")
     grep -qF "$v" "$REPO_ROOT/docs/arch/SYSTEM-MAP.md"
 }
+
+@test "AGENTS.md exists and is shipped by both installers (ADR-004/D1)" {
+    [ -f "$REPO_ROOT/AGENTS.md" ]
+    local all_entries
+    all_entries=$(extract_sh_list CORE_FILES)
+    echo "$all_entries" | grep -qxF "AGENTS.md"
+    all_entries=$(extract_ps1_list CoreFiles)
+    echo "$all_entries" | grep -qxF "AGENTS.md"
+}
+
+@test "CLAUDE.md and AGENTS.md cross-reference each other (sync marker present)" {
+    grep -q "AGENTS.md" "$CLAUDE_MD"
+    grep -q "CLAUDE.md" "$REPO_ROOT/AGENTS.md"
+}

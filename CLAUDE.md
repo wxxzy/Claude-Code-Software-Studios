@@ -1,5 +1,7 @@
 # Universal Software Studio — Claude Code Integration
 
+> 跨工具版本（Codex/Cursor/Gemini CLI 等读取）见 `AGENTS.md`——正文保持同步，改动任一方需同步另一方。
+
 **双模态**：Vibe Mode（探索/原型）与 Studio Mode（严肃/生产）共存。
 
 ## 模式声明

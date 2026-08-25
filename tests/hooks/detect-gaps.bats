@@ -58,3 +58,44 @@ teardown() {
     [ "$status" -eq 0 ]
     [[ "$output" != *"no-prd"* ]]
 }
+
+@test "no sandbox dir: no stale-sandbox gap" {
+    mkdir -p production docs/arch
+    printf '# Backlog\n' > production/backlog.md
+    printf '# prefs\n' > docs/arch/TECHNICAL-PREFERENCES.md
+    run "$HOOK"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"stale-sandbox"* ]]
+}
+
+@test "freshly written sandbox dir: no stale-sandbox gap" {
+    mkdir -p production docs/arch sandbox/demo1
+    printf '# Backlog\n' > production/backlog.md
+    printf '# prefs\n' > docs/arch/TECHNICAL-PREFERENCES.md
+    printf 'fresh\n' > sandbox/demo1/main.js
+    run "$HOOK"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"stale-sandbox"* ]]
+}
+
+@test "sandbox dir with only 40-day-old files: stale-sandbox gap reported" {
+    mkdir -p production docs/arch sandbox/demo1
+    printf '# Backlog\n' > production/backlog.md
+    printf '# prefs\n' > docs/arch/TECHNICAL-PREFERENCES.md
+    printf 'old\n' > sandbox/demo1/main.js
+    touch -t 202506010000 sandbox/demo1/main.js
+    run "$HOOK"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"stale-sandbox(1"* ]]
+}
+
+@test "sandbox/archive subdir is excluded from stale-sandbox scan" {
+    mkdir -p production docs/arch sandbox/archive/old-2026
+    printf '# Backlog\n' > production/backlog.md
+    printf '# prefs\n' > docs/arch/TECHNICAL-PREFERENCES.md
+    printf 'old\n' > sandbox/archive/old-2026/main.js
+    touch -t 202506010000 sandbox/archive/old-2026/main.js
+    run "$HOOK"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"stale-sandbox"* ]]
+}

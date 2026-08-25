@@ -176,6 +176,7 @@ CORE_FILES=(
   ".claude/agents/cost-accountant.md"
   ".claude/agents/debt-auditor.md"
   # --- Base docs & templates ---
+  "AGENTS.md"
   ".claude/docs/quick-start.md"
   ".claude/docs/directory-structure.md"
   ".claude/docs/skills-reference.md"

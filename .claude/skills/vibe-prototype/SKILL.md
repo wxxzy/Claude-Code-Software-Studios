@@ -40,7 +40,8 @@ agent: explorer
    - 依赖清单（`package.json` / `requirements.txt`）——**必须锁定版本**
 5. **实现核心流程**: 只做 `lite-spec` 中"三条必须达成"的第一条
 6. **验证可运行**: 提供启动命令，确认能跑
-7. **交付**: 打印启动命令给用户
+7. **检查点提交**: 能跑起来后立即 `git add sandbox/<name>/ && git commit -m "wip(sandbox/<name>): <本轮做了什么>"`（遵循 `vibe-mode.md` §7，预授权，无需逐次确认；用户明确说不要提交则跳过）
+8. **交付**: 打印启动命令给用户
 
 ---
 
