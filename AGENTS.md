@@ -40,7 +40,3 @@
 - 目录结构：`.claude/docs/directory-structure.md`
 
 > Claude Code 用户额外拥有 `.claude/skills/` 下的 22 个可自动加载技能（斜杠命令）与 hooks 自动化，见 `CLAUDE.md` + `.claude/docs/skills-reference.md`。非 Claude Code 工具没有技能自动加载机制，请直接依据本文件与 Path Rules 手动执行对应工作流。
-
-## 技术栈默认倾向
-
-Backend: Python (FastAPI) / Node.js · Frontend: Next.js / React · Docs: Markdown + ADR

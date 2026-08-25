@@ -57,7 +57,3 @@
 | | | | `/gate-check` | `/studio-gate-check` |
 
 （`/vibe-start`、`/vibe-check` 名称未变）
-
-## 技术栈默认倾向
-
-Backend: Python (FastAPI) / Node.js · Frontend: Next.js / React · Docs: Markdown + ADR
